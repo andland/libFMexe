@@ -28,22 +28,28 @@ The support for `libFM` is still fairly limited, but this package allows you to 
 
 libFM does well with categorical variables with lots of levels. The canonical example is for collaborative filtering, where there is one categorical variable for the users and one for the items. For now, I have only included support for covariates that factor variables.
 
+The main advantage of this package is being able to try many different models. For example, trying different combinations of variables, trying different `dim` of the two-way interactions, or trying different `init_stdev`.
+
 ```r
-data(car, package = "Rmixmod")
-car$acceptable = ifelse(car$acceptability == "unacc", 0, 1)
-train_rows = sample.int(nrow(car), nrow(car) * 2 / 3)
-
-train = car[train_rows, ]
-test = car[-train_rows, ]
-
 library(libFMwin)
+
+data(movie_lense)
+train_rows = sample.int(nrow(movie_lense), nrow(movie_lense) * 2 / 3)
+
+train = movie_lense[train_rows, ]
+test  = movie_lense[-train_rows, ]
+
 predFM = libFM(train, test, 
-             acceptable ~ buying + maint + doors + persons + lug_boot + safety,
-             task = "c", dim = 8)
+               Rating ~ User + Movie,
+               task = "r", dim = 8)
 
-mod = glm(acceptable ~ buying + maint + doors + persons + lug_boot + safety, data = train, family = binomial)
-predGLM = predict(mod, test, type = "response")
+mod = lm(Rating ~ User + Movie, data = train)
+predLM = predict(mod, test)
 
-logithistplot(data.frame(predFM, test$acceptable))
-logithistplot(data.frame(predGLM, test$acceptable))
+mean((predFM - test$Rating)^2)
+mean((predLM - test$Rating)^2)
 ```
+
+## Improving this package
+
+[c++ source code](https://github.com/srendle/libfm) is available for libFM. Let me know if you would like to help build an implementation that calls the source code.
