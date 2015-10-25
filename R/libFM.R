@@ -39,8 +39,8 @@ libFM.model.frame <- function(data, formula) {
 #' @param train training data
 #' @param test testing data
 #' @param formula formula of covariates included. They must all be factors
-#' @param bias whether to include an overall bias term
-#' @param main_effects whether to include covariate main effects
+#' @param global_bias whether to include an overall/global bias term
+#' @param variable_bias whether to include variable main effects/biases
 #' @param dim dimension of the two-way interaction
 #' @param task classifcation or regression
 #' @param method learning method
@@ -50,14 +50,17 @@ libFM.model.frame <- function(data, formula) {
 #' @param iter number of iterations
 #' @param exe_loc location of libfm.exe executable (if not in the PATH)
 #'
+#' @details See the libFM manual, \url{http://www.libfm.org/libfm-1.42.manual.pdf},
+#'  for details on the parameters.
+#'
 #' @references
 #' Steffen Rendle (2012): Factorization Machines with libFM, in ACM Trans.
 #' Intell. Syst. Technol., 3(3), May.
 #'
 #' @return
-#' vector of the predicted values/probabilities
+#' A vector of the predicted values/probabilities
 #' @export
-libFM <- function(train, test, formula, bias = TRUE, main_effects = TRUE, dim = 8,
+libFM <- function(train, test, formula, global_bias = TRUE, variable_bias = TRUE, dim = 8,
                 task = c("c", "r"), method = c("mcmc", "sgd", "als", "sgda"),
                 init_stdev = 0.1, verbosity = 0, iter = 100, exe_loc) {
   method = match.arg(method)
@@ -68,7 +71,7 @@ libFM <- function(train, test, formula, bias = TRUE, main_effects = TRUE, dim = 
     libfm_exe = paste0("\"", file.path(exe_loc, "libfm"), "\"")
   }
 
-  dim_txt = paste0(ifelse(bias, 1, 0), ",", ifelse(main_effects, 1, 0), ",", dim)
+  dim_txt = paste0(ifelse(global_bias, 1, 0), ",", ifelse(variable_bias, 1, 0), ",", dim)
 
   trainloc = paste(tempdir(), "libFMtrain.txt", sep = "\\")
   testloc = paste(tempdir(), "libFMtest.txt", sep = "\\")

@@ -2,10 +2,10 @@
 % Please edit documentation in R/libFM.R
 \name{libFM}
 \alias{libFM}
-\title{libFM facorization machines}
+\title{libFM factorization machines}
 \usage{
-libFM(train, test, formula, bias = TRUE, main_effects = TRUE, dim = 8,
-  task = c("c", "r"), method = c("mcmc", "sgd", "als", "sgda"),
+libFM(train, test, formula, global_bias = TRUE, variable_bias = TRUE,
+  dim = 8, task = c("c", "r"), method = c("mcmc", "sgd", "als", "sgda"),
   init_stdev = 0.1, verbosity = 0, iter = 100, exe_loc)
 }
 \arguments{
@@ -15,9 +15,9 @@ libFM(train, test, formula, bias = TRUE, main_effects = TRUE, dim = 8,
 
 \item{formula}{formula of covariates included. They must all be factors}
 
-\item{bias}{whether to include an overall bias term}
+\item{global_bias}{whether to include an overall/global bias term}
 
-\item{main_effects}{whether to include covariate main effects}
+\item{variable_bias}{whether to include variable main effects/biases}
 
 \item{dim}{dimension of the two-way interaction}
 
@@ -35,10 +35,14 @@ of 2-way factors}
 \item{exe_loc}{location of libfm.exe executable (if not in the PATH)}
 }
 \value{
-vector of the predicted values/probabilities
+A vector of the predicted values/probabilities
 }
 \description{
-libFM facorization machines
+libFM factorization machines
+}
+\details{
+See the libFM manual, \url{http://www.libfm.org/libfm-1.42.manual.pdf},
+ for details on the parameters.
 }
 \references{
 Steffen Rendle (2012): Factorization Machines with libFM, in ACM Trans.
