@@ -39,15 +39,29 @@ train_rows = sample.int(nrow(movie_lense), nrow(movie_lense) * 2 / 3)
 train = movie_lense[train_rows, ]
 test  = movie_lense[-train_rows, ]
 
-predFM = libFM(train, test, 
-               Rating ~ User + Movie,
-               task = "r", dim = 8)
-
-mod = lm(Rating ~ User + Movie, data = train)
-predLM = predict(mod, test)
+predFM = libFM(train, test, Rating ~ User + Movie,
+               task = "r", dim = 10, iter = 500)
 
 mean((predFM - test$Rating)^2)
-mean((predLM - test$Rating)^2)
+
+# compare to ridge regression, which cannot model interactions
+library(glmnet)
+
+spmat = sparse.model.matrix(Rating ~ User + Movie, data = movie_lense)
+trainsp = spmat[train_rows, ]
+testsp = spmat[-train_rows, ]
+
+mod = cv.glmnet(x = trainsp, y = movie_lense$Rating[train_rows], alpha = 0)
+predRR = predict(mod, testsp, s = "lambda.min")
+
+mean((predRR - test$Rating)^2)
+
+# For comparison, dim = 0 is basically the same as ridge regression
+predFM_RR = libFM(train, test, Rating ~ User + Movie,
+                  task = "r", dim = 0, iter = 100)
+
+mean((predFM_RR - test$Rating)^2)
+
 ```
 
 ## Improving this package
