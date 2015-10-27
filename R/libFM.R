@@ -66,15 +66,22 @@ libFM <- function(train, test, formula, global_bias = TRUE, variable_bias = TRUE
   method = match.arg(method)
   task = match.arg(task)
   if (missing(exe_loc)) {
-    libfm_exe = "libfm"
+    if (.Platform$OS.type == "windows") {
+      libfm_exe = "libfm"
+    } else {
+      libfm_exe = "libFM"
+    }
   } else {
     libfm_exe = paste0("\"", file.path(exe_loc, "libfm"), "\"")
   }
 
+  # the following will give an error if it cannot find libFM
+  tmp = system(libfm_exe, intern = TRUE)
+
   dim_txt = paste0(ifelse(global_bias, 1, 0), ",", ifelse(variable_bias, 1, 0), ",", dim)
 
-  trainloc = paste(tempdir(), "libFMtrain.txt", sep = "\\")
-  testloc = paste(tempdir(), "libFMtest.txt", sep = "\\")
+  trainloc = paste0(tempfile(), "libFMtrain.txt")
+  testloc = paste0(tempfile(), "libFMtest.txt")
   outloc = paste0(tempfile(), "out.txt")
 
   train_libFM = libFM.model.frame(train, formula)

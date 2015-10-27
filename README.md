@@ -9,9 +9,17 @@ This package provides a rough interface to the [libFM](http://www.libfm.org/) li
 
 ### Installing libFM executable
 
+#### Windows
+
 First, you will need to [download the libFM windows executable](http://www.libfm.org/#download) and save it on your computer, for example in `C:\libFM`. 
 
 Then, it is recommended that you add the directory that you saved libFM in to you system path. [This webpage](https://msdn.microsoft.com/en-us/library/office/ee537574(v=office.14).aspx) provides one way to do that. If you do not or cannot do that, you can enter the directory as `exe_loc` argument into the `libFM()` function, for example `libFM(..., exe_loc = "C:\\libFM")`.
+
+You can verify that the path contains the libFM directory by running `Sys.getenv('PATH')` and you can verify that the program works by running `system("libfm -help")`.
+
+#### Mac / Linux
+
+
 
 ### Installing libFMwin R package
 
@@ -61,7 +69,6 @@ predFM_RR = libFM(train, test, Rating ~ User + Movie,
                   task = "r", dim = 0, iter = 100)
 
 mean((predFM_RR - test$Rating)^2)
-
 ```
 
 ## Improving this package
