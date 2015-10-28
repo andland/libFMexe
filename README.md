@@ -2,10 +2,10 @@
 R Wrapper for the libFM Executable
 ==================================
 
-This package provides a rough interface to the [libFM](http://www.libfm.org/) library on Windows with [R](https://www.r-project.org/). It does this in two ways:
+This package provides a rough interface to [libFM](http://www.libfm.org/) using the executable with [R](https://www.r-project.org/). It does this in two ways:
 
 -   The `libFM.model.frame()` function converts data into libFM (also LIBSVD) format
--   It calls the libFM Windows executable with your data and returns the resulting prediction
+-   It calls the libFM executable with your data and returns the resulting prediction
 
 Installing
 ----------
@@ -18,20 +18,26 @@ First, you will need to [download the libFM windows executable](http://www.libfm
 
 Then, it is recommended that you add the directory that you saved libFM in to you system path. [This webpage](https://msdn.microsoft.com/en-us/library/office/ee537574(v=office.14).aspx) provides one way to do that. If you do not or cannot do that, you can enter the directory as `exe_loc` argument into the `libFM()` function, for example `libFM(..., exe_loc = "C:\\libFM")`.
 
-You can verify that the path contains the libFM directory by running `Sys.getenv('PATH')` and you can verify that the program works by running `system("libfm -help")`.
-
 #### Mac / Linux
 
-### Installing libFMwin R package
+First, you will need to [download the libFM C++ source code](http://www.libfm.org/#download) and install it on your computer, for example in `/usr/local/share/libFM/bin`. You can also download the development code from Steffen Rendle's [github repository](https://github.com/srendle/libfm).
+
+Then, it is recommended that you add the directory that you saved libFM in to you system path. [This webpage](http://architectryan.com/2012/10/02/add-to-the-path-on-mac-os-x-mountain-lion/) worked for me. If you do not or cannot do that, you can enter the directory as `exe_loc` argument into the `libFM()` function, for example `libFM(..., exe_loc = "/usr/local/share/libFM/bin")`.
+
+#### Debugging
+
+You can verify that the path contains the libFM directory by running `Sys.getenv('PATH')`. For some reason, the executable is named `libFM` on Windows and `libfm` on Mac and Linux. Verify that the program works by running `system("libfm -help")` on Windows or `system("libFM -help")` on Mac and Linux.
+
+### Installing libFMexe R package
 
 With the `devtools` package, you can install this package by running the following.
 
 ``` r
 # install.package("devtools")
-devtools::install_github("andland/libFMwin")
+devtools::install_github("andland/libFMexe")
 ```
 
-Using libFMwin
+Using libFMexe
 --------------
 
 The support for `libFM` is still fairly limited, but this package allows you to quickly iterate on a number of models.
@@ -45,7 +51,7 @@ The main advantage of this package is being able to try many different models. F
 Using the Movie Lense 100k data, we can predict what ratings users will give to movies.
 
 ``` r
-library(libFMwin)
+library(libFMexe)
 
 data(movie_lense)
 
@@ -57,10 +63,10 @@ predFM = libFM(train, test, Rating ~ User + Movie,
                task = "r", dim = 10, iter = 500)
 
 mean((predFM - test$Rating)^2)
-#> [1] 0.8292505
+#> [1] 0.839458
 ```
 
-This gives a mean squared error of 0.8292505 with dimension 10.
+This gives a mean squared error of 0.839458 with dimension 10.
 
 We can compare to something simpler, such as ridge regression. Ridge regression cannot model interactions of users and movies because each interaction is observed at most once.
 
@@ -75,10 +81,10 @@ mod = cv.glmnet(x = trainsp, y = movie_lense$Rating[train_rows], alpha = 0)
 predRR = predict(mod, testsp, s = "lambda.min")
 
 mean((predRR - test$Rating)^2)
-#> [1] 0.9053793
+#> [1] 0.9137772
 ```
 
-Ridge regression gives a mean squared error of 0.9053793.
+Ridge regression gives a mean squared error of 0.9137772.
 
 For comparison, we can run libFM with `dim = 0`, which is basically the same as ridge regression.
 
@@ -87,10 +93,10 @@ predFM_RR = libFM(train, test, Rating ~ User + Movie,
                   task = "r", dim = 0, iter = 100)
 
 mean((predFM_RR - test$Rating)^2)
-#> [1] 0.8992392
+#> [1] 0.9070764
 ```
 
-This gives a mean squared error of 0.8992392, nearly the same as ridge regression.
+This gives a mean squared error of 0.9070764, nearly the same as ridge regression.
 
 Improving this package
 ----------------------

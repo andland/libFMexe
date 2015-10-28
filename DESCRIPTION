@@ -1,13 +1,11 @@
-Package: libFMwin
+Package: libFMexe
 Type: Package
 Title: Factorization Machines with R
 Version: 0.1
 Date: 2015-10-22
-Authors@R: as.person(c(
-    "Andrew J. Landgraf <andland@gmail.com> [cre]",
-    "Steffen Rendle [aut]"
-    ))
+Authors@R: as.person(
+    "Andrew J. Landgraf <andland@gmail.com> [aut, cre]")
 Description: A rough interface to libFM factorizations machines
-  through the windows executable
+  through the executable
 License: GPL-3
 LazyData: TRUE
