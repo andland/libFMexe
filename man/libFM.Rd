@@ -9,9 +9,9 @@ libFM(train, test, formula, global_bias = TRUE, variable_bias = TRUE,
   init_stdev = 0.1, verbosity = 0, iter = 100, exe_loc)
 }
 \arguments{
-\item{train}{training data}
+\item{train}{training data.frame}
 
-\item{test}{testing data}
+\item{test}{testing data.frame}
 
 \item{formula}{formula of covariates included. They must all be factors}
 

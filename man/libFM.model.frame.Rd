@@ -9,7 +9,8 @@ libFM.model.frame(data, formula)
 \arguments{
 \item{data}{data.frame}
 
-\item{formula}{}
+\item{formula}{the formula with the response on the left hand side
+  and the covariates on the right hand side}
 }
 \value{
 a character vector with one value per observation

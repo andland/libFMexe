@@ -5,7 +5,8 @@
 #' or else it will not work correctly
 #'
 #' @param data data.frame
-#' @param formula
+#' @param formula the formula with the response on the left hand side
+#'   and the covariates on the right hand side
 #'
 #' @return a character vector with one value per observation
 #' @export
@@ -36,8 +37,8 @@ libFM.model.frame <- function(data, formula) {
 
 #' libFM factorization machines
 #'
-#' @param train training data
-#' @param test testing data
+#' @param train training data.frame
+#' @param test testing data.frame
 #' @param formula formula of covariates included. They must all be factors
 #' @param global_bias whether to include an overall/global bias term
 #' @param variable_bias whether to include variable main effects/biases
