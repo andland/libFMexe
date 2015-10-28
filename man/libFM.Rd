@@ -43,6 +43,29 @@ libFM factorization machines
 \details{
 See the libFM manual, \url{http://www.libfm.org/libfm-1.42.manual.pdf},
  for details on the parameters.
+
+ If the function is not working, make sure that the directory is in the PATH
+ by running \code{Sys.getenv('PATH')}. It is assumed that the executable is named
+ (lowecase) \code{libfm} on Windows and (not all lowercase) \code{libFM} on
+ Linux \ Mac. You can verify that the executable is being found and works by
+ running either \code{system("libfm -help")} or \code{system("libFM -help")}
+ on Windows or Linux \ Mac, respectively.
+
+ See the README on \url{https://github.com/andland/libFMexe} for some more
+ information.
+}
+\examples{
+\dontrun{
+data(movie_lense)
+train_rows = sample.int(nrow(movie_lense), nrow(movie_lense) * 2 / 3)
+train = movie_lense[train_rows, ]
+test  = movie_lense[-train_rows, ]
+
+predFM = libFM(train, test, Rating ~ User + Movie,
+               task = "r", dim = 10, iter = 500)
+
+mean((predFM - test$Rating)^2)
+}
 }
 \references{
 Steffen Rendle (2012): Factorization Machines with libFM, in ACM Trans.
