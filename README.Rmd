@@ -39,7 +39,7 @@ Then, it is recommended that you add the directory that you saved libFM in to yo
 
 #### Debugging
 
-You can verify that the path contains the libFM directory by running `Sys.getenv('PATH')`. For some reason, the executable is named `libFM` on Windows and `libfm` on Mac and Linux. Verify that the program works by running `system("libfm -help")` on Windows or `system("libFM -help")` on Mac and Linux.
+You can verify that the path contains the libFM directory by running `Sys.getenv('PATH')`. For some reason, the executable is named `libfm` on Windows and `libFM` on Mac and Linux. Verify that the program works by running `system("libfm -help")` on Windows or `system("libFM -help")` on Mac and Linux.
 
 ### Installing libFMexe R package
 
