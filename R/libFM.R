@@ -47,6 +47,11 @@ libFM.model.frame <- function(data, formula) {
 #' @param method learning method
 #' @param init_stdev standard deviation used for initialization
 #'  of 2-way factors
+#' @param regular length 3 vector of regularization parameters for
+#'  global bias, variable biases, and interactions, respectively. Used with
+#'  SGD and ALS
+#' @param learn_rate learning rate used for SGD and adaptive SGD
+#' @param validation validation data.frame used for adaptive SGD
 #' @param verbosity how much feedback to give
 #' @param iter number of iterations
 #' @param exe_loc location of libfm.exe executable (if not in the PATH)
@@ -86,7 +91,8 @@ libFM.model.frame <- function(data, formula) {
 #' @export
 libFM <- function(train, test, formula, global_bias = TRUE, variable_bias = TRUE, dim = 8,
                 task = c("c", "r"), method = c("mcmc", "sgd", "als", "sgda"),
-                init_stdev = 0.1, verbosity = 0, iter = 100, exe_loc) {
+                init_stdev = 0.1, regular = c(0, 0, 0), learn_rate = 0.1, validation,
+                verbosity = 0, iter = 100, exe_loc) {
   method = match.arg(method)
   task = match.arg(task)
   if (missing(exe_loc)) {
@@ -101,6 +107,18 @@ libFM <- function(train, test, formula, global_bias = TRUE, variable_bias = TRUE
 
   # the following will give an error if it cannot find libFM
   tmp = system(libfm_exe, intern = TRUE)
+
+  if (method %in% c("sgd", "als")) {
+    if (!(length(regular) %in% c(1, 3))) {
+      stop("regular must be a scalar or vector of length 3")
+    }
+    if (length(regular) == 1) {
+      regular = rep(regular, 3)
+    }
+    regular_txt = paste(regular, collapse = ",")
+  } else {
+    regular_txt = "0,0,0"
+  }
 
   dim_txt = paste0(ifelse(global_bias, 1, 0), ",", ifelse(variable_bias, 1, 0), ",", dim)
 
@@ -124,8 +142,28 @@ libFM <- function(train, test, formula, global_bias = TRUE, variable_bias = TRUE
                    " -out ", outloc,
                    " -iter ", iter,
                    " -dim \'", dim_txt, "\'")
-  out = system(command, intern = TRUE)
-  if (verbosity > 0) print(out)
+  if (method %in% c("sgd", "als")) {
+    command = paste0(command,
+                     " -regular \'", regular_txt, "\'")
+  }
+  if (method %in% c("sgd", "sgda")) {
+    command = paste0(command,
+                     " -learn_rate ", learn_rate)
+  }
+  if (method == "sgda") {
+    if (!missing(validation)) {
+      validloc = paste0(tempfile(), "libFMvalid.txt")
+      valid_libFM = libFM.model.frame(validation, formula)
+      write.table(valid_libFM, file = validloc, col.names = FALSE, row.names = FALSE, quote = FALSE)
+
+      command = paste0(command,
+                       " -validation ", validloc)
+    } else {
+      stop("with method = \"sgda\", you must have a validation data.frame")
+    }
+  }
+
+  out = system(command, intern = verbosity <= 0)
 
   pred_libFM = read.table(outloc, header = FALSE)$V1
 

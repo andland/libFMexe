@@ -6,7 +6,8 @@
 \usage{
 libFM(train, test, formula, global_bias = TRUE, variable_bias = TRUE,
   dim = 8, task = c("c", "r"), method = c("mcmc", "sgd", "als", "sgda"),
-  init_stdev = 0.1, verbosity = 0, iter = 100, exe_loc)
+  init_stdev = 0.1, regular = c(0, 0, 0), learn_rate = 0.1, validation,
+  verbosity = 0, iter = 100, exe_loc)
 }
 \arguments{
 \item{train}{training data.frame}
@@ -27,6 +28,14 @@ libFM(train, test, formula, global_bias = TRUE, variable_bias = TRUE,
 
 \item{init_stdev}{standard deviation used for initialization
 of 2-way factors}
+
+\item{regular}{length 3 vector of regularization parameters for
+global bias, variable biases, and interactions, respectively. Used with
+SGD and ALS}
+
+\item{learn_rate}{learning rate used for SGD and adaptive SGD}
+
+\item{validation}{validation data.frame used for adaptive SGD}
 
 \item{verbosity}{how much feedback to give}
 
