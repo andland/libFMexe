@@ -61,10 +61,8 @@ libFM.model.frame <- function(data, formula) {
 #'
 #'  If the function is not working, make sure that the directory is in the PATH
 #'  by running \code{Sys.getenv('PATH')}. It is assumed that the executable is named
-#'  (lowecase) \code{libfm} on Windows and (not all lowercase) \code{libFM} on
-#'  Linux \ Mac. You can verify that the executable is being found and works by
-#'  running either \code{system("libfm -help")} or \code{system("libFM -help")}
-#'  on Windows or Linux \ Mac, respectively.
+#'  \code{libFM} on. You can verify that the executable is being found and works by
+#'  running either \code{system("libFM -help")}.
 #'
 #'  See the README on \url{https://github.com/andland/libFMexe} for some more
 #'  information.
@@ -96,11 +94,12 @@ libFM <- function(train, test, formula, global_bias = TRUE, variable_bias = TRUE
   method = match.arg(method)
   task = match.arg(task)
   if (missing(exe_loc)) {
-    if (.Platform$OS.type == "windows") {
-      libfm_exe = "libfm"
-    } else {
-      libfm_exe = "libFM"
-    }
+#     if (.Platform$OS.type == "windows") {
+#       libfm_exe = "libfm"
+#     } else {
+#       libfm_exe = "libFM"
+#     }
+    libfm_exe = "libFM"
   } else {
     libfm_exe = paste0("\"", file.path(exe_loc, "libfm"), "\"")
   }

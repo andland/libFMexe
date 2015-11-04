@@ -26,7 +26,7 @@ Then, it is recommended that you add the directory that you saved libFM in to yo
 
 #### Debugging
 
-You can verify that the path contains the libFM directory by running `Sys.getenv('PATH')`. For some reason, the executable is named `libfm` on Windows and `libFM` on Mac and Linux. Verify that the program works by running `system("libfm -help")` on Windows or `system("libFM -help")` on Mac and Linux.
+You can verify that the path contains the libFM directory by running `Sys.getenv('PATH')`. Verify that the program works by running `system("libFM -help")`.
 
 ### Installing libFMexe R package
 
@@ -55,6 +55,7 @@ library(libFMexe)
 
 data(movie_lense)
 
+set.seed(1)
 train_rows = sample.int(nrow(movie_lense), nrow(movie_lense) * 2 / 3)
 train = movie_lense[train_rows, ]
 test  = movie_lense[-train_rows, ]
@@ -63,10 +64,10 @@ predFM = libFM(train, test, Rating ~ User + Movie,
                task = "r", dim = 10, iter = 500)
 
 mean((predFM - test$Rating)^2)
-#> [1] 0.8195682
+#> [1] 0.8188555
 ```
 
-This gives a mean squared error of 0.8195682 with dimension 10.
+This gives a mean squared error of 0.8188555 with dimension 10.
 
 We can compare to something simpler, such as ridge regression. Ridge regression cannot model interactions of users and movies because each interaction is observed at most once.
 
@@ -81,10 +82,10 @@ mod = cv.glmnet(x = trainsp, y = movie_lense$Rating[train_rows], alpha = 0)
 predRR = predict(mod, testsp, s = "lambda.min")
 
 mean((predRR - test$Rating)^2)
-#> [1] 0.8960157
+#> [1] 0.8954028
 ```
 
-Ridge regression gives a mean squared error of 0.8960157.
+Ridge regression gives a mean squared error of 0.8954028.
 
 For comparison, we can run libFM with `dim = 0`, which is basically the same as ridge regression.
 
@@ -93,10 +94,10 @@ predFM_RR = libFM(train, test, Rating ~ User + Movie,
                   task = "r", dim = 0, iter = 100)
 
 mean((predFM_RR - test$Rating)^2)
-#> [1] 0.8889636
+#> [1] 0.8883521
 ```
 
-This gives a mean squared error of 0.8889636, nearly the same as ridge regression.
+This gives a mean squared error of 0.8883521, nearly the same as ridge regression.
 
 Improving this package
 ----------------------

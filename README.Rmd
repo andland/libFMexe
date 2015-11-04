@@ -39,7 +39,7 @@ Then, it is recommended that you add the directory that you saved libFM in to yo
 
 #### Debugging
 
-You can verify that the path contains the libFM directory by running `Sys.getenv('PATH')`. For some reason, the executable is named `libfm` on Windows and `libFM` on Mac and Linux. Verify that the program works by running `system("libfm -help")` on Windows or `system("libFM -help")` on Mac and Linux.
+You can verify that the path contains the libFM directory by running `Sys.getenv('PATH')`. Verify that the program works by running `system("libFM -help")`.
 
 ### Installing libFMexe R package
 
@@ -66,6 +66,7 @@ library(libFMexe)
 
 data(movie_lense)
 
+set.seed(1)
 train_rows = sample.int(nrow(movie_lense), nrow(movie_lense) * 2 / 3)
 train = movie_lense[train_rows, ]
 test  = movie_lense[-train_rows, ]
