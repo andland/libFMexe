@@ -6,6 +6,6 @@ Date: 2015-10-22
 Authors@R: as.person(
     "Andrew J. Landgraf <andland@gmail.com> [aut, cre]")
 Description: A rough interface to libFM factorizations machines
-  through the executable
+  through the executable.
 License: GPL-3
 LazyData: TRUE
