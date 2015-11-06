@@ -4,13 +4,15 @@
 \alias{model.frame.libFM}
 \title{Converts a data frame into a format digestable for libFM}
 \usage{
-\method{model.frame}{libFM}(formula, data)
+\method{model.frame}{libFM}(formula, data, ...)
 }
 \arguments{
 \item{formula}{the formula with the response on the left hand side
 and the covariates on the right hand side}
 
 \item{data}{data.frame}
+
+\item{...}{optional, currently unused, arguments}
 }
 \value{
 a character vector with one value per observation
