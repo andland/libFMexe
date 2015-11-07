@@ -24,18 +24,18 @@ If your data consists of factor variables with a lot of levels,
   model_frame_libFM is much faster than matrix_libFM.
 }
 \examples{
-data(movie_lense)
-movie_lense_sub = tail(movie_lense, 10)
+data(movie_lens)
+movie_lens_sub = tail(movie_lens, 10)
 
 # model.matrix will remove the reference level
 # which may not be desireable is some situations
-movie_lense_mm = model.matrix(Rating ~ User + Movie, data = movie_lense_sub)
+movie_lens_mm = model.matrix(Rating ~ User + Movie, data = movie_lens_sub)
 
 # remove intercept
-movie_lense_mm = movie_lense_mm[, -1]
+movie_lens_mm = movie_lens_mm[, -1]
 
-movie_lense_libFM = matrix_libFM(movie_lense_mm, movie_lense_sub$Rating)
-movie_lense_libFM
+movie_lens_libFM = matrix_libFM(movie_lens_mm, movie_lens_sub$Rating)
+movie_lens_libFM
 }
 \seealso{
 \code{\link{model_frame_libFM}}

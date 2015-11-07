@@ -49,37 +49,37 @@ The main advantage of this package is being able to try many different models. F
 
 ### Collaborative Filtering Example
 
-Using the Movie Lense 100k data, we can predict what ratings users will give to movies.
+Using the Movie Lens 100k data, we can predict what ratings users will give to movies.
 
 ``` r
 library(libFMexe)
 
-data(movie_lense)
+data(movie_lens)
 
 set.seed(1)
-train_rows = sample.int(nrow(movie_lense), nrow(movie_lense) * 2 / 3)
-train = movie_lense[train_rows, ]
-test  = movie_lense[-train_rows, ]
+train_rows = sample.int(nrow(movie_lens), nrow(movie_lens) * 2 / 3)
+train = movie_lens[train_rows, ]
+test  = movie_lens[-train_rows, ]
 
 predFM = libFM(train, test, Rating ~ User + Movie,
                task = "r", dim = 10, iter = 500)
 
 mean((predFM - test$Rating)^2)
-#> [1] 0.8186754
+#> [1] 0.8189204
 ```
 
-This gives a mean squared error of 0.8186754 with dimension 10.
+This gives a mean squared error of 0.8189204 with dimension 10.
 
 We can compare to something simpler, such as ridge regression. Ridge regression cannot model interactions of users and movies because each interaction is observed at most once.
 
 ``` r
 suppressPackageStartupMessages(library(glmnet))
 
-spmat = sparse.model.matrix(Rating ~ User + Movie, data = movie_lense)
+spmat = sparse.model.matrix(Rating ~ User + Movie, data = movie_lens)
 trainsp = spmat[train_rows, ]
 testsp = spmat[-train_rows, ]
 
-mod = cv.glmnet(x = trainsp, y = movie_lense$Rating[train_rows], alpha = 0)
+mod = cv.glmnet(x = trainsp, y = movie_lens$Rating[train_rows], alpha = 0)
 predRR = predict(mod, testsp, s = "lambda.min")
 
 mean((predRR - test$Rating)^2)
@@ -95,10 +95,10 @@ predFM_RR = libFM(train, test, Rating ~ User + Movie,
                   task = "r", dim = 0, iter = 100)
 
 mean((predFM_RR - test$Rating)^2)
-#> [1] 0.8883293
+#> [1] 0.8882339
 ```
 
-This gives a mean squared error of 0.8883293, nearly the same as ridge regression.
+This gives a mean squared error of 0.8882339, nearly the same as ridge regression.
 
 Improving this package
 ----------------------

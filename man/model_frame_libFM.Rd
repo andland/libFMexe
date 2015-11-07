@@ -27,10 +27,10 @@ If your data consists of factor variables with a lot of levels,
   model_frame_libFM is much faster than matrix_libFM.
 }
 \examples{
-data(movie_lense)
+data(movie_lens)
 
-movie_lense_libFM = model_frame_libFM(Rating ~ User + Movie, movie_lense)
-tail(movie_lense_libFM, 10)
+movie_lens_libFM = model_frame_libFM(Rating ~ User + Movie, movie_lens)
+tail(movie_lens_libFM, 10)
 }
 \seealso{
 \code{\link{matrix_libFM}}

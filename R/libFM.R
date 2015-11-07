@@ -17,10 +17,10 @@
 #'
 #' @examples
 #' \dontrun{
-#' data(movie_lense)
-#' train_rows = sample.int(nrow(movie_lense), nrow(movie_lense) * 2 / 3)
-#' train = movie_lense[train_rows, ]
-#' test  = movie_lense[-train_rows, ]
+#' data(movie_lens)
+#' train_rows = sample.int(nrow(movie_lens), nrow(movie_lens) * 2 / 3)
+#' train = movie_lens[train_rows, ]
+#' test  = movie_lens[-train_rows, ]
 #'
 #' predFM = libFM(train, test, Rating ~ User + Movie,
 #'                task = "r", dim = 10, iter = 500)

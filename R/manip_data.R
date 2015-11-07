@@ -15,10 +15,10 @@
 #'   model_frame_libFM is much faster than matrix_libFM.
 #'
 #' @examples
-#' data(movie_lense)
+#' data(movie_lens)
 #'
-#' movie_lense_libFM = model_frame_libFM(Rating ~ User + Movie, movie_lense)
-#' tail(movie_lense_libFM, 10)
+#' movie_lens_libFM = model_frame_libFM(Rating ~ User + Movie, movie_lens)
+#' tail(movie_lens_libFM, 10)
 #'
 #' @seealso \code{\link{matrix_libFM}}
 #' @export
@@ -77,18 +77,18 @@ model_frame_libFM <- function(formula, data, ...) {
 #'   model_frame_libFM is much faster than matrix_libFM.
 #'
 #' @examples
-#' data(movie_lense)
-#' movie_lense_sub = tail(movie_lense, 10)
+#' data(movie_lens)
+#' movie_lens_sub = tail(movie_lens, 10)
 #'
 #' # model.matrix will remove the reference level
 #' # which may not be desireable is some situations
-#' movie_lense_mm = model.matrix(Rating ~ User + Movie, data = movie_lense_sub)
+#' movie_lens_mm = model.matrix(Rating ~ User + Movie, data = movie_lens_sub)
 #'
 #' # remove intercept
-#' movie_lense_mm = movie_lense_mm[, -1]
+#' movie_lens_mm = movie_lens_mm[, -1]
 #'
-#' movie_lense_libFM = matrix_libFM(movie_lense_mm, movie_lense_sub$Rating)
-#' movie_lense_libFM
+#' movie_lens_libFM = matrix_libFM(movie_lens_mm, movie_lens_sub$Rating)
+#' movie_lens_libFM
 #'
 #' @seealso \code{\link{model_frame_libFM}}
 #' @export

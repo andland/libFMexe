@@ -7,9 +7,9 @@ user_to_df = function(i) {
 }
 
 rating_dfs = lapply(1:nrow(MovieLense), user_to_df)
-movie_lense = do.call(rbind, rating_dfs)
+movie_lens = do.call(rbind, rating_dfs)
 
-movie_lense$User = factor(movie_lense$User)
-movie_lense$Movie = factor(movie_lense$Movie)
+movie_lens$User = factor(movie_lens$User)
+movie_lens$Movie = factor(movie_lens$Movie)
 
-save(movie_lense, file = "data/movie_lense.rdata", compress = "xz")
+save(movie_lens, file = "data/movie_lens.rdata", compress = "xz")

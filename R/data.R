@@ -1,7 +1,7 @@
-#' @title Movie Lense 100k ratings
+#' @title Movie Lens 100k ratings
 #'
 #' @description
-#' The 100k MovieLense ratings data set. The data was collected through the MovieLens
+#' The 100k MovieLens ratings data set. The data was collected through the MovieLens
 #' web site (movielens.umn.edu) during the seven-month period from September 19th, 1997
 #' through April 22nd, 1998. The data set contains about 100,000 ratings (1-5) from 943
 #' users on 1664 movies.
@@ -24,5 +24,5 @@
 #'  Research and Development in Information Retrieval. Aug. 1999.
 #'
 #' @examples
-#' data(movie_lense)
-"movie_lense"
+#' data(movie_lens)
+"movie_lens"
