@@ -22,4 +22,17 @@ This can only deal with factors as covariate.
 It is important to make sure your covariates are all factors (not indicators),
 or else it will not work correctly
 }
+\details{
+If your data consists of factor variables with a lot of levels,
+  model_frame_libFM is much faster than matrix_libFM.
+}
+\examples{
+data(movie_lense)
+
+movie_lense_libFM = model_frame_libFM(Rating ~ User + Movie, movie_lense)
+tail(movie_lense_libFM, 10)
+}
+\seealso{
+\code{\link{matrix_libFM}}
+}
 

@@ -10,6 +10,17 @@
 #' @param ... optional, currently unused, arguments
 #'
 #' @return a character vector with one value per observation
+#'
+#' @details If your data consists of factor variables with a lot of levels,
+#'   model_frame_libFM is much faster than matrix_libFM.
+#'
+#' @examples
+#' data(movie_lense)
+#'
+#' movie_lense_libFM = model_frame_libFM(Rating ~ User + Movie, movie_lense)
+#' tail(movie_lense_libFM, 10)
+#'
+#' @seealso \code{\link{matrix_libFM}}
 #' @export
 model_frame_libFM <- function(formula, data, ...) {
   # the independent variables should all be factors
@@ -62,9 +73,24 @@ model_frame_libFM <- function(formula, data, ...) {
 #'
 #' @return a character vector with one value per observation
 #'
-#' @note If your data consists of factor variables with a lot of levels,
-#'   model_matrix_libFM is much faster.
+#' @details If your data consists of factor variables with a lot of levels,
+#'   model_frame_libFM is much faster than matrix_libFM.
 #'
+#' @examples
+#' data(movie_lense)
+#' movie_lense_sub = tail(movie_lense, 10)
+#'
+#' # model.matrix will remove the reference level
+#' # which may not be desireable is some situations
+#' movie_lense_mm = model.matrix(Rating ~ User + Movie, data = movie_lense_sub)
+#'
+#' # remove intercept
+#' movie_lense_mm = movie_lense_mm[, -1]
+#'
+#' movie_lense_libFM = matrix_libFM(movie_lense_mm, movie_lense_sub$Rating)
+#' movie_lense_libFM
+#'
+#' @seealso \code{\link{model_frame_libFM}}
 #' @export
 matrix_libFM <- function(mat, y) {
   if (!("matrix" %in% class(mat) || inherits(mat, "sparseMatrix"))) {

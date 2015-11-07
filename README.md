@@ -5,6 +5,7 @@ R Wrapper for the libFM Executable
 This package provides a rough interface to [libFM](http://www.libfm.org/) using the executable with [R](https://www.r-project.org/). It does this in two ways:
 
 -   `model_frame_libFM()` and `matrix_libFM()` convert data into libFM (also LIBSVD) format
+    -   `model_frame_libFM()` is very fast when your data are factors with many levels
 -   It calls the libFM executable with your data and returns the resulting prediction
 
 Installing
@@ -64,10 +65,10 @@ predFM = libFM(train, test, Rating ~ User + Movie,
                task = "r", dim = 10, iter = 500)
 
 mean((predFM - test$Rating)^2)
-#> [1] 0.8192223
+#> [1] 0.8186754
 ```
 
-This gives a mean squared error of 0.8192223 with dimension 10.
+This gives a mean squared error of 0.8186754 with dimension 10.
 
 We can compare to something simpler, such as ridge regression. Ridge regression cannot model interactions of users and movies because each interaction is observed at most once.
 
@@ -94,10 +95,10 @@ predFM_RR = libFM(train, test, Rating ~ User + Movie,
                   task = "r", dim = 0, iter = 100)
 
 mean((predFM_RR - test$Rating)^2)
-#> [1] 0.8879214
+#> [1] 0.8883293
 ```
 
-This gives a mean squared error of 0.8879214, nearly the same as ridge regression.
+This gives a mean squared error of 0.8883293, nearly the same as ridge regression.
 
 Improving this package
 ----------------------
