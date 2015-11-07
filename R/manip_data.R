@@ -11,7 +11,7 @@
 #'
 #' @return a character vector with one value per observation
 #' @export
-model.frame.libFM <- function(formula, data, ...) {
+model_frame_libFM <- function(formula, data, ...) {
   # the independent variables should all be factors
   if (!("data.frame" %in% class(data))) {
     stop("data must be a data.frame")
@@ -33,16 +33,45 @@ model.frame.libFM <- function(formula, data, ...) {
   vars = attr(attr(terms(formula), "factors"), "dimnames")[[2]]
   col.num = 0
   for (var in vars) {
-    out.string = paste0(out.string, " ", col.num + as.numeric(data[[var]]) - 1, ":", 1)
-    col.num = col.num + nlevels(data[[var]])
+    var_data = data[[var]]
+    if (is.factor(var_data) || is.character(var_data)) {
+      if (!is.factor(var_data)) {
+        warning(var, " has character class and is not a factor.\n",
+                "This can cause issues if not all of the levels are present in a subset ",
+                "of the data.")
+        var_data = factor(var_data)
+      }
+      out.string = paste0(out.string, " ", col.num + as.numeric(var_data) - 1, ":", 1)
+      col.num = col.num + nlevels(var_data)
+    } else if (is.numeric(var_data) | is.logical(var_data)) {
+      out.string = paste0(out.string, " ", col.num, ":", as.numeric(var_data))
+      col.num = col.num + 1
+    } else {
+      stop(var, " has an unknown variable type.")
+    }
   }
   return(out.string)
 }
 
-
-matrix.libFM <- function(mat, y) {
+#' Converts a matrix to libFM format
+#'
+#' @param mat matrix to be converted. Can either be a standard matrix
+#'   or a sparse matrix
+#' @param y The response variable. If unavailable (for test data), a
+#'   1 is used because libFM requires a response.
+#'
+#' @return a character vector with one value per observation
+#'
+#' @note If your data consists of factor variables with a lot of levels,
+#'   model_matrix_libFM is much faster.
+#'
+#' @export
+matrix_libFM <- function(mat, y) {
   if (!("matrix" %in% class(mat) || inherits(mat, "sparseMatrix"))) {
     stop("mat must be an object of class \"matrix\" or \"Matrix\"")
+  }
+  if ("matrix" %in% class(mat) & !is.numeric(mat)) {
+    stop("mat must be a numeric matrix")
   }
   if (!missing(y)) {
     out.string = paste0(y)
@@ -61,7 +90,7 @@ matrix.libFM <- function(mat, y) {
   return(out.string)
 }
 
-libFM.groups <- function(formula, data) {
+libFM_groups <- function(formula, data) {
   # data should be a data.frame
   if (!("data.frame" %in% class(data))) {
     stop("data must be a data.frame")

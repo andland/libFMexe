@@ -88,8 +88,8 @@ libFM <- function(train, test, formula, global_bias = TRUE, variable_bias = TRUE
   testloc = paste0(tempfile(), "libFMtest.txt")
   outloc = paste0(tempfile(), "out.txt")
 
-  train_libFM = model.frame.libFM(formula, train)
-  test_libFM = model.frame.libFM(formula, test)
+  train_libFM = model_frame_libFM(formula, train)
+  test_libFM = model_frame_libFM(formula, test)
 
   write.table(train_libFM, file = trainloc, col.names = FALSE, row.names = FALSE, quote = FALSE)
   write.table(test_libFM, file = testloc, col.names = FALSE, row.names = FALSE, quote = FALSE)
@@ -115,7 +115,7 @@ libFM <- function(train, test, formula, global_bias = TRUE, variable_bias = TRUE
   if (method == "sgda") {
     if (!missing(validation)) {
       validloc = paste0(tempfile(), "libFMvalid.txt")
-      valid_libFM = model.frame.libFM(formula, validation)
+      valid_libFM = model_frame_libFM(formula, validation)
       write.table(valid_libFM, file = validloc, col.names = FALSE, row.names = FALSE, quote = FALSE)
 
       command = paste0(command,
