@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 
 This package provides a rough interface to [libFM](http://www.libfm.org/) using the executable with [R](https://www.r-project.org/). It does this in two ways:
 
-* The `model.frame.libFM()` function converts data into libFM (also LIBSVD) format
+* `model_frame_libFM()` and `matrix_libFM()` convert data into libFM (also LIBSVD) format
 * It calls the libFM executable with your data and returns the resulting prediction
 
 ## Installing

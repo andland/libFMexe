@@ -2,19 +2,37 @@
 % Please edit documentation in R/libFM.R
 \name{libFM}
 \alias{libFM}
+\alias{libFM.data.frame}
+\alias{libFM.default}
+\alias{libFM.matrix}
 \title{libFM factorization machines}
 \usage{
-libFM(train, test, formula, global_bias = TRUE, variable_bias = TRUE,
-  dim = 8, task = c("c", "r"), method = c("mcmc", "sgd", "als", "sgda"),
-  init_stdev = 0.1, regular = c(0, 0, 0), learn_rate = 0.1, validation,
-  verbosity = 0, iter = 100, exe_loc)
+libFM(train, test, ...)
+
+\method{libFM}{data.frame}(train, test, formula, validation, ...)
+
+\method{libFM}{matrix}(train, test, y_train, y_test, validation, y_validation,
+  ...)
+
+\method{libFM}{default}(train, test, global_bias = TRUE,
+  variable_bias = TRUE, dim = 8, task = c("c", "r"), method = c("mcmc",
+  "sgd", "als", "sgda"), init_stdev = 0.1, regular = c(0, 0, 0),
+  learn_rate = 0.1, validation, verbosity = 0, iter = 100, exe_loc, ...)
 }
 \arguments{
-\item{train}{training data.frame}
+\item{train}{training data.frame, matrix, or character vector}
 
-\item{test}{testing data.frame}
+\item{test}{testing data.frame, matrix, or character vector}
 
-\item{formula}{formula of covariates included. They must all be factors}
+\item{...}{other, unused, arguments}
+
+\item{formula}{formula of covariates included}
+
+\item{validation}{validation data.frame, matrix, or character vector used for
+  adaptive SGD}
+
+\item{y_train,y_test,y_validation}{numeric vectors of responses when train,
+  test, and validation are matrices}
 
 \item{global_bias}{whether to include an overall/global bias term}
 
@@ -34,8 +52,6 @@ global bias, variable biases, and interactions, respectively. Used with
 SGD and ALS}
 
 \item{learn_rate}{learning rate used for SGD and adaptive SGD}
-
-\item{validation}{validation data.frame used for adaptive SGD}
 
 \item{verbosity}{how much feedback to give}
 
@@ -61,6 +77,14 @@ See the libFM manual, \url{http://www.libfm.org/libfm-1.42.manual.pdf},
  See the README on \url{https://github.com/andland/libFMexe} for some more
  information.
 }
+\section{Methods (by class)}{
+\itemize{
+\item \code{data.frame}: 
+
+\item \code{matrix}: 
+
+\item \code{default}: 
+}}
 \examples{
 \dontrun{
 data(movie_lense)
