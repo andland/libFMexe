@@ -113,6 +113,7 @@ matrix_libFM <- function(mat, y) {
       out.string
     )
   }
+  names(out.string) <- NULL
   return(out.string)
 }
 
