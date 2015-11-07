@@ -13,7 +13,9 @@
 #' @export
 model.frame.libFM <- function(formula, data, ...) {
   # the independent variables should all be factors
-  # TODO: check data is a data.frame
+  if (!("data.frame" %in% class(data))) {
+    stop("data must be a data.frame")
+  }
   is.response = attr(terms(formula), "response")
   if (is.response) {
     response_name = attr(attr(terms(formula), "factors"), "dimnames")[[1]][1]
@@ -38,19 +40,21 @@ model.frame.libFM <- function(formula, data, ...) {
 }
 
 
-matrix.libFM <- function(matrix, y) {
-  # TODO: check matrix is a matrix
+matrix.libFM <- function(mat, y) {
+  if (!("matrix" %in% class(mat) || inherits(mat, "sparseMatrix"))) {
+    stop("mat must be an object of class \"matrix\" or \"Matrix\"")
+  }
   if (!missing(y)) {
     out.string = paste0(y)
   } else {
     warning("No response variable. Using constant 1 as response")
-    out.string = paste0(rep(1, nrow(matrix)))
+    out.string = paste0(rep(1, nrow(mat)))
   }
 
-  for (c in 1:ncol(matrix)) {
+  for (c in 1:ncol(mat)) {
     out.string = ifelse(
-      matrix[, c] != 0,
-      paste0(out.string, " ", c, ":", matrix[, c]),
+      mat[, c] != 0,
+      paste0(out.string, " ", c, ":", mat[, c]),
       out.string
     )
   }
@@ -58,18 +62,41 @@ matrix.libFM <- function(matrix, y) {
 }
 
 libFM.groups <- function(formula, data) {
-  # the independent variables should all be factors
   # data should be a data.frame
-  # TODO: check data is a data.frame
+  if (!("data.frame" %in% class(data))) {
+    stop("data must be a data.frame")
+  }
+
   vars = attr(attr(terms(formula), "factors"), "dimnames")[[2]]
-  # TODO: give length of 1 to non-factors
-  groups = rep(
-    0:(length(vars) - 1),
-    as.numeric(apply(
-      data[[vars]],
-      2,
-      function(x) nlevels(x)
-    ))
+  vars_char = vapply(
+    1:length(vars),
+    function(x)
+      !is.factor(data[[vars[x]]]) & is.character(data[[vars[x]]]),
+    TRUE
   )
+  if (any(vars_char)) {
+    warning(sum(vars_char), " variable(s) have character class and are not factors.\n",
+            "This can cause issues if not all of the levels are present in a subset ",
+            "of the data.")
+  }
+
+  group_lengths = vapply(
+    1:length(vars),
+    function(x) {
+      ifelse(
+        is.factor(data[[vars[x]]]),
+        nlevels(data[[vars[x]]]),
+        ifelse(
+          is.character(data[[vars[x]]]),
+          length(unique(data[[vars[x]]])),
+          1L
+        )
+      )
+    },
+    1L
+  )
+
+  groups = rep(0:(length(vars) - 1), group_lengths)
+
   return(groups)
 }
