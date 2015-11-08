@@ -10,10 +10,10 @@
 #'  If the function is not working, make sure that the directory is in the PATH
 #'  by running \code{Sys.getenv('PATH')}. It is assumed that the executable is named
 #'  \code{libFM} on. You can verify that the executable is being found and works by
-#'  running either \code{system("libFM -help")}.
+#'  running \code{system("libFM -help")}.
 #'
 #'  See the README on \url{https://github.com/andland/libFMexe} for some more
-#'  information.
+#'  information on installation.
 #'
 #' @examples
 #' \dontrun{
@@ -105,7 +105,7 @@ libFM.matrix <- function(train, test, y_train, y_test, validation, y_validation,
 #' @param learn_rate learning rate used for SGD and adaptive SGD
 #' @param verbosity how much feedback to give
 #' @param iter number of iterations
-#' @param exe_loc location of libfm.exe executable (if not in the PATH)
+#' @param exe_loc location of libFM.exe executable (if not in the PATH)
 #'
 #' @export
 libFM.default <- function(train, test, global_bias = TRUE, variable_bias = TRUE, dim = 8,
@@ -170,7 +170,7 @@ libFM.default <- function(train, test, global_bias = TRUE, variable_bias = TRUE,
       command = paste0(command,
                        " -validation ", validloc)
     } else {
-      stop("with method = \"sgda\", you must have a validation data.frame")
+      stop("With method = \"sgda\", you must have provide validation data")
     }
   }
 

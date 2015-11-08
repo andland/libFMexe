@@ -57,7 +57,7 @@ SGD and ALS}
 
 \item{iter}{number of iterations}
 
-\item{exe_loc}{location of libfm.exe executable (if not in the PATH)}
+\item{exe_loc}{location of libFM.exe executable (if not in the PATH)}
 }
 \value{
 A vector of the predicted values/probabilities
@@ -72,10 +72,10 @@ See the libFM manual, \url{http://www.libfm.org/libfm-1.42.manual.pdf},
  If the function is not working, make sure that the directory is in the PATH
  by running \code{Sys.getenv('PATH')}. It is assumed that the executable is named
  \code{libFM} on. You can verify that the executable is being found and works by
- running either \code{system("libFM -help")}.
+ running \code{system("libFM -help")}.
 
  See the README on \url{https://github.com/andland/libFMexe} for some more
- information.
+ information on installation.
 }
 \section{Methods (by class)}{
 \itemize{
