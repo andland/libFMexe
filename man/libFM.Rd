@@ -9,15 +9,16 @@
 \usage{
 libFM(train, test, ...)
 
-\method{libFM}{data.frame}(train, test, formula, validation, ...)
+\method{libFM}{data.frame}(train, test, formula, validation, grouping, ...)
 
 \method{libFM}{matrix}(train, test, y_train, y_test, validation, y_validation,
-  ...)
+  grouping, ...)
 
 \method{libFM}{default}(train, test, global_bias = TRUE,
   variable_bias = TRUE, dim = 8, task = c("c", "r"), method = c("mcmc",
   "sgd", "als", "sgda"), init_stdev = 0.1, regular = c(0, 0, 0),
-  learn_rate = 0.1, validation, verbosity = 0, iter = 100, exe_loc, ...)
+  learn_rate = 0.1, validation, verbosity = 0, iter = 100, exe_loc,
+  grouping, ...)
 }
 \arguments{
 \item{train}{training data.frame, matrix, or character vector}
@@ -29,7 +30,9 @@ libFM(train, test, ...)
 \item{formula}{formula of covariates included}
 
 \item{validation}{validation data.frame, matrix, or character vector used for
-  adaptive SGD}
+adaptive SGD}
+
+\item{grouping}{logical scalar or integer vector}
 
 \item{y_train,y_test,y_validation}{numeric vectors of responses when train,
   test, and validation are matrices}
@@ -68,6 +71,12 @@ libFM factorization machines
 \details{
 See the libFM manual, \url{http://www.libfm.org/libfm-1.42.manual.pdf},
  for details on the parameters.
+
+ For grouping, if specifying model with a formula, this should be a logical
+ of whether to group levels of a factor variable. If specifying the model with
+ a design matrix, this should be an integer vector of the same length as the
+ number of columns in the design matix, where each integer specifies the group
+ which the variable belongs to.
 
  If the function is not working, make sure that the directory is in the PATH
  by running \code{Sys.getenv('PATH')}. It is assumed that the executable is named

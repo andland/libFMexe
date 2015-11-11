@@ -117,6 +117,14 @@ matrix_libFM <- function(mat, y) {
   return(out.string)
 }
 
+#' Extract grouping of variables based on formula
+#'
+#' @param formula the formula with the response on the left hand side
+#'   and the covariates on the right hand side
+#' @param data data.frame
+#'
+#' @return vector of integers with group labels of the variables
+#' @export
 libFM_groups <- function(formula, data) {
   # data should be a data.frame
   if (!("data.frame" %in% class(data))) {

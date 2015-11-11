@@ -7,6 +7,12 @@
 #' @details See the libFM manual, \url{http://www.libfm.org/libfm-1.42.manual.pdf},
 #'  for details on the parameters.
 #'
+#'  For grouping, if specifying model with a formula, this should be a logical
+#'  of whether to group levels of a factor variable. If specifying the model with
+#'  a design matrix, this should be an integer vector of the same length as the
+#'  number of columns in the design matix, where each integer specifies the group
+#'  which the variable belongs to.
+#'
 #'  If the function is not working, make sure that the directory is in the PATH
 #'  by running \code{Sys.getenv('PATH')}. It is assumed that the executable is named
 #'  \code{libFM} on. You can verify that the executable is being found and works by
@@ -44,9 +50,24 @@ libFM <- function(train, test, ...) {
 #' @param formula formula of covariates included
 #' @param validation validation data.frame, matrix, or character vector used for
 #'   adaptive SGD
+#' @param grouping logical scalar or integer vector
 #'
 #' @export
-libFM.data.frame <- function(train, test, formula, validation, ...) {
+libFM.data.frame <- function(train, test, formula, validation, grouping, ...) {
+  if (!missing(grouping)) {
+    if (!(is.logical(grouping) & length(grouping) == 1)) {
+      stop("when specifying a model with a formula, grouping needs to be a logical")
+    }
+    if (grouping) {
+      grouping = libFM_groups(formula, train)
+      include_grouping = TRUE
+    } else {
+      include_grouping = FALSE
+    }
+  } else {
+    include_grouping = TRUE
+  }
+
   train = model_frame_libFM(formula, train)
   if (!inherits(test, "data.frame")) {
     stop("train is a data.frame but test is not")
@@ -59,7 +80,11 @@ libFM.data.frame <- function(train, test, formula, validation, ...) {
     validation = model_frame_libFM(formula, validation)
   }
 
-  libFM.default(train, test, validation = validation, ...)
+  if (include_grouping) {
+    libFM.default(train, test, validation = validation, grouping = grouping, ...)
+  } else {
+    libFM.default(train, test, validation = validation, grouping = grouping, ...)
+  }
 }
 
 #' @describeIn libFM
@@ -68,13 +93,23 @@ libFM.data.frame <- function(train, test, formula, validation, ...) {
 #'   test, and validation are matrices
 #'
 #' @export
-libFM.matrix <- function(train, test, y_train, y_test, validation, y_validation, ...) {
+libFM.matrix <- function(train, test, y_train, y_test,
+                         validation, y_validation, grouping, ...) {
   if (inherits(train, "matrix") & missing(y_train)) {
     stop("y_train is missing")
   }
   if (!inherits(test, "matrix")) {
     stop("train is a matrix but test is not")
   }
+
+  if (!missing(grouping)) {
+    # TODO: better check that integers and no missing groups
+    if (!(is.numeric(grouping) & length(grouping) == ncol(train))) {
+      stop("when specifying a model with a matrix, grouping must ",
+           "be a numeric vector")
+    }
+  }
+
   train = matrix_libFM(train, y_train)
   test = matrix_libFM(test, y_test)
   if (!missing(validation)) {
@@ -87,7 +122,7 @@ libFM.matrix <- function(train, test, y_train, y_test, validation, y_validation,
     validation = matrix_libFM(validation, y_validation)
   }
 
-  libFM.default(train, test, validation = validation, ...)
+  libFM.default(train, test, validation = validation, grouping = grouping, ...)
 }
 
 #' @describeIn libFM
@@ -111,7 +146,7 @@ libFM.matrix <- function(train, test, y_train, y_test, validation, y_validation,
 libFM.default <- function(train, test, global_bias = TRUE, variable_bias = TRUE, dim = 8,
                 task = c("c", "r"), method = c("mcmc", "sgd", "als", "sgda"),
                 init_stdev = 0.1, regular = c(0, 0, 0), learn_rate = 0.1, validation,
-                verbosity = 0, iter = 100, exe_loc, ...) {
+                verbosity = 0, iter = 100, exe_loc, grouping, ...) {
   method = match.arg(method)
   task = match.arg(task)
   if (missing(exe_loc)) {
@@ -124,6 +159,7 @@ libFM.default <- function(train, test, global_bias = TRUE, variable_bias = TRUE,
   tmp = system(libfm_exe, intern = TRUE)
 
   if (method %in% c("sgd", "als")) {
+    # TODO: can be longer than 3 with grouping
     if (!(length(regular) %in% c(1, 3))) {
       stop("regular must be a scalar or vector of length 3")
     }
@@ -172,6 +208,13 @@ libFM.default <- function(train, test, global_bias = TRUE, variable_bias = TRUE,
     } else {
       stop("With method = \"sgda\", you must have provide validation data")
     }
+  }
+  if (!missing(grouping)) {
+    groupingloc = paste0(tempfile(), "libFMgroups.txt")
+    write.table(grouping, file = groupingloc, col.names = FALSE, row.names = FALSE, quote = FALSE)
+
+    command = paste0(command,
+                     " -meta ", groupingloc)
   }
 
   out = system(command, intern = verbosity <= 0)
