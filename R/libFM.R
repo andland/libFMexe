@@ -83,7 +83,7 @@ libFM.data.frame <- function(train, test, formula, validation, grouping, ...) {
   if (include_grouping) {
     libFM.default(train, test, validation = validation, grouping = grouping, ...)
   } else {
-    libFM.default(train, test, validation = validation, grouping = grouping, ...)
+    libFM.default(train, test, grouping = grouping, ...)
   }
 }
 
@@ -117,7 +117,7 @@ libFM.matrix <- function(train, test, y_train, y_test,
       stop("validation argument present but y_validation is missing")
     }
     if (!inherits(validation, "matrix")) {
-      stop("validation is a matrix but test is not")
+      stop("train is a matrix but validation is not")
     }
     validation = matrix_libFM(validation, y_validation)
   }
