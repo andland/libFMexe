@@ -4,23 +4,25 @@
 #' @param ... arguments passed to libFM
 #'
 #' @details
-#'  This function attempts to speed things up by converting data to libFM format
-#'  first, and then
+#'   This function attempts to speed things up by converting all the data to libFM format
+#'   first, so that there are not repetitive and computationally-costly data conversions.
 #'
-#'   If unspecified, loss_function will be sum of squared error for regression or
-#'   Bernoulli deviance for classification. You can specify your own function also.
-#'   loss_function must be a function that takes two vector arguments and returns a scalar numeric.
+#'   If unspecified, \code{loss_function} will be mean squared error for regression or
+#'   mean Bernoulli deviance for classification. You can specify your own function also.
+#'   \code{loss_function} must be a function that takes two vector arguments and returns a scalar numeric.
 #'   The first argument is the predicted value / probability and the second is the true value.
 #'
 #' @examples
 #' \dontrun{
 #' data(movie_lens)
-#' sses = cv_libFM(movie_lens, Rating ~ User + Movie, task = "r", dims = c(0, 5, 10))
-#' sses / nrow(movie_lens)
+#' mses = cv_libFM(movie_lens, Rating ~ User + Movie,
+#'                 task = "r", dims = c(0, 5, 10), cv_verbosity = 1)
+#' mses
 #' }
 #'
 ##' @return
-#' A vector of the predicted values/probabilities
+#' A matrix of the cross validated \code{loss_function}. There are \code{length(dims)}
+#'   rows and \code{length(init_stdevs)} columns.
 #' @seealso \code{\link{libFM}}
 #' @export
 cv_libFM <- function(x, ...) {
@@ -125,17 +127,18 @@ cv_libFM.default <- function(x, dims = c(0, 8), init_stdevs = 0.1, folds = 5,
                              validation, grouping, task = c("c", "r"), loss_function,
                              cv_verbosity = 0, ...) {
   task = match.arg(task)
+  n = length(x)
   if (length(folds) > 1) {
     # does this work if factor?
     if (length(unique(folds)) <= 1) {
       stop("If inputing CV split, must be more than one level")
     }
-    if (length(folds) != length(x)) {
+    if (length(folds) != n) {
       stop("if folds is a vector, it should be of same length as nrow(x)")
     }
     fold_ids = folds
   } else {
-    fold_ids = sample(1:folds, length(x), replace = TRUE)
+    fold_ids = sample(1:folds, n, replace = TRUE)
   }
 
   # retrieve the responses
@@ -144,30 +147,37 @@ cv_libFM.default <- function(x, dims = c(0, 8), init_stdevs = 0.1, folds = 5,
   if (missing(loss_function)) {
     if (task == "r") {
       loss_function <- function(pred, truth) {
-        sum((pred - truth)^2)
+        mean((pred - truth)^2)
       }
     } else {
       loss_function <- function(pred, truth) {
         - 2 * (sum(log(pred)[truth == 1]) +
-                 sum(log(1 - pred)[truth == 0]))
+                 sum(log(1 - pred)[truth == 0])) / length(truth)
       }
     }
   }
 
   results = matrix(0, length(dims), length(init_stdevs),
                    dimnames = list(dim = dims, inti_stdev = init_stdevs))
-  for (cv in unique(fold_ids)) {
+
+  for (d in dims) {
     if (cv_verbosity > 0) {
-      cat("fold", which(cv == unique(fold_ids)), "of", length(unique(fold_ids)), "\n")
+      cat("dim", which(d == unique(dims)), "of", length(unique(dims)), "")
     }
-    for (d in dims) {
-      for (sd in init_stdevs) {
-        pred_cv = libFM.default(x[fold_ids != cv], x[fold_ids == cv],
+    for (sd in init_stdevs) {
+      if (cv_verbosity > 0) {
+        cat(".")
+      }
+      pred_cv = rep(NA, n)
+      for (cv in unique(fold_ids)) {
+        pred_cv[fold_ids == cv] = libFM.default(x[fold_ids != cv], x[fold_ids == cv],
                              dim = d, init_stdev = sd, validation = validation,
                              grouping = grouping, task = task, ...)
-        results[d == dims, sd == init_stdevs] =
-          results[d == dims, sd == init_stdevs] +
-          loss_function(pred_cv, labels[fold_ids == cv])
+      }
+      results[d == dims, sd == init_stdevs] =
+        loss_function(pred_cv, labels)
+      if (cv_verbosity > 0) {
+        cat("\n")
       }
     }
   }

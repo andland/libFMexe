@@ -48,18 +48,19 @@ fold ids for each row}
 \item{loss_function}{loss function to evaluate. See details for more information}
 }
 \value{
-A vector of the predicted values/probabilities
+A matrix of the cross validated \code{loss_function}. There are \code{length(dims)}
+  rows and \code{length(init_stdevs)} columns.
 }
 \description{
 Cross validation for libFM factorization machines
 }
 \details{
-This function attempts to speed things up by converting data to libFM format
- first, and then
+This function attempts to speed things up by converting all the data to libFM format
+  first, so that there are not repetitive and computationally-costly data conversions.
 
-  If unspecified, loss_function will be sum of squared error for regression or
-  Bernoulli deviance for classification. You can specify your own function also.
-  loss_function must be a function that takes two vector arguments and returns a scalar numeric.
+  If unspecified, \code{loss_function} will be mean squared error for regression or
+  mean Bernoulli deviance for classification. You can specify your own function also.
+  \code{loss_function} must be a function that takes two vector arguments and returns a scalar numeric.
   The first argument is the predicted value / probability and the second is the true value.
 }
 \section{Methods (by class)}{
@@ -73,8 +74,9 @@ This function attempts to speed things up by converting data to libFM format
 \examples{
 \dontrun{
 data(movie_lens)
-sses = cv_libFM(movie_lens, Rating ~ User + Movie, task = "r", dims = c(0, 5, 10))
-sses / nrow(movie_lens)
+mses = cv_libFM(movie_lens, Rating ~ User + Movie,
+                task = "r", dims = c(0, 5, 10), cv_verbosity = 1)
+mses
 }
 }
 \seealso{
