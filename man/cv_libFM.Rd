@@ -5,7 +5,8 @@
 \alias{cv_libFM.data.frame}
 \alias{cv_libFM.default}
 \alias{cv_libFM.matrix}
-\title{Cross validation for libFM factorization machines}
+\title{Cross validation for rank and initialization standard deviation
+with libFM factorization machines}
 \usage{
 cv_libFM(x, ...)
 
@@ -52,7 +53,8 @@ A matrix of the cross validated \code{loss_function}. There are \code{length(dim
   rows and \code{length(init_stdevs)} columns.
 }
 \description{
-Cross validation for libFM factorization machines
+Cross validation for rank and initialization standard deviation
+with libFM factorization machines
 }
 \details{
 This function attempts to speed things up by converting all the data to libFM format

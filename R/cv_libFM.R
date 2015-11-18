@@ -1,4 +1,5 @@
-#' Cross validation for libFM factorization machines
+#' Cross validation for rank and initialization standard deviation
+#' with libFM factorization machines
 #'
 #' @param x data.frame, matrix, or character vector used for cross validation
 #' @param ... arguments passed to libFM
@@ -70,7 +71,7 @@ cv_libFM.data.frame <- function(x, formula, validation, grouping, cv_verbosity =
     cv_libFM.default(x, validation = validation, grouping = grouping,
                      cv_verbosity = cv_verbosity,...)
   } else {
-    cv_libFM.default(x, grouping = grouping, cv_verbosity = cv_verbosity, ...)
+    cv_libFM.default(x, validation = validation, cv_verbosity = cv_verbosity, ...)
   }
 }
 
