@@ -109,7 +109,7 @@ matrix_libFM <- function(mat, y) {
   for (c in 1:ncol(mat)) {
     out.string = ifelse(
       mat[, c] != 0,
-      paste0(out.string, " ", c, ":", mat[, c]),
+      paste0(out.string, " ", c - 1, ":", mat[, c]),
       out.string
     )
   }

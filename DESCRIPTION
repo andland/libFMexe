@@ -9,3 +9,4 @@ Description: A rough interface to libFM factorizations machines
   through the executable.
 License: GPL-3
 LazyData: TRUE
+Suggests: testthat
