@@ -52,10 +52,10 @@ model_frame_libFM <- function(formula, data, ...) {
                 "of the data.")
         var_data = factor(var_data)
       }
-      out.string = paste0(out.string, " ", col.num + as.numeric(var_data) - 1, ":", 1)
+      out.string = paste0(out.string, " ", sprintf("%i", col.num + as.numeric(var_data) - 1), ":", 1)
       col.num = col.num + nlevels(var_data)
     } else if (is.numeric(var_data) | is.logical(var_data)) {
-      out.string = paste0(out.string, " ", col.num, ":", as.numeric(var_data))
+      out.string = paste0(out.string, " ", sprintf("%i", col.num), ":", as.numeric(var_data))
       col.num = col.num + 1
     } else {
       stop(var, " has an unknown variable type.")
@@ -109,7 +109,7 @@ matrix_libFM <- function(mat, y) {
   for (c in 1:ncol(mat)) {
     out.string = ifelse(
       mat[, c] != 0,
-      paste0(out.string, " ", c - 1, ":", mat[, c]),
+      paste0(out.string, " ", sprintf("%i", c - 1), ":", mat[, c]),
       out.string
     )
   }
