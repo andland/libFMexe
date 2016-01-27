@@ -211,7 +211,8 @@ libFM.default <- function(train, test, global_bias = TRUE, variable_bias = TRUE,
   }
   if (!missing(grouping)) {
     groupingloc = paste0(tempfile(), "libFMgroups.txt")
-    write.table(grouping, file = groupingloc, col.names = FALSE, row.names = FALSE, quote = FALSE)
+    write.table(sprintf("%i", grouping), file = groupingloc, 
+                col.names = FALSE, row.names = FALSE, quote = FALSE)
 
     command = paste0(command,
                      " -meta ", groupingloc)
