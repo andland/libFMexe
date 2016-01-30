@@ -11,8 +11,10 @@
 #'
 #' @return a character vector with one value per observation
 #'
-#' @details If your data consists of factor variables with a lot of levels,
-#'   model_frame_libFM is much faster than matrix_libFM.
+#' @details If your data is sparse, sp_matrix_libFM is about 100 times faster than
+#'   matrix_libFM. I recommend using the sparse version over the standard version
+#'   whenever possible. If your data consists of factor variables with a lot of levels,
+#'   model_frame_libFM is faster than sp_matrix_libFM.
 #'
 #' @examples
 #' data(movie_lens)
@@ -20,7 +22,7 @@
 #' movie_lens_libFM = model_frame_libFM(Rating ~ User + Movie, movie_lens)
 #' tail(movie_lens_libFM, 10)
 #'
-#' @seealso \code{\link{matrix_libFM}}
+#' @seealso \code{\link{sp_matrix_libFM}}, \code{\link{matrix_libFM}}
 #' @export
 model_frame_libFM <- function(formula, data, ...) {
   # the independent variables should all be factors
@@ -73,8 +75,10 @@ model_frame_libFM <- function(formula, data, ...) {
 #'
 #' @return a character vector with one value per observation
 #'
-#' @details If your data consists of factor variables with a lot of levels,
-#'   model_frame_libFM is much faster than matrix_libFM.
+#' @details If your data is sparse, sp_matrix_libFM is about 100 times faster than
+#'   matrix_libFM. I recommend using the sparse version over the standard version
+#'   whenever possible. If your data consists of factor variables with a lot of levels,
+#'   model_frame_libFM is faster than sp_matrix_libFM.
 #'
 #' @examples
 #' data(movie_lens)
@@ -82,15 +86,12 @@ model_frame_libFM <- function(formula, data, ...) {
 #'
 #' # model.matrix will remove the reference level
 #' # which may not be desireable is some situations
-#' movie_lens_mm = model.matrix(Rating ~ User + Movie, data = movie_lens_sub)
-#'
-#' # remove intercept
-#' movie_lens_mm = movie_lens_mm[, -1]
+#' movie_lens_mm = model.matrix(Rating ~ User + Movie - 1, data = movie_lens_sub)
 #'
 #' movie_lens_libFM = matrix_libFM(movie_lens_mm, movie_lens_sub$Rating)
 #' movie_lens_libFM
 #'
-#' @seealso \code{\link{model_frame_libFM}}
+#' @seealso \code{\link{sp_matrix_libFM}}, \code{\link{model_frame_libFM}}
 #' @export
 matrix_libFM <- function(mat, y) {
   if (!("matrix" %in% class(mat) || inherits(mat, "sparseMatrix"))) {
@@ -112,6 +113,57 @@ matrix_libFM <- function(mat, y) {
       paste0(out.string, " ", sprintf("%i", c - 1), ":", mat[, c]),
       out.string
     )
+  }
+  names(out.string) <- NULL
+  return(out.string)
+}
+
+#' Converts a sparse matrix to libFM format
+#'
+#' @param mat sparse matrix to be converted. Must be a sparse matrix
+#'   from the package \code{Matrix}
+#' @param y The response variable. If unavailable (for test data), a
+#'   1 is used because libFM requires a response.
+#'
+#' @return a character vector with one value per observation
+#'
+#' @details If your data is sparse, sp_matrix_libFM is about 100 times faster than
+#'   matrix_libFM. I recommend using the sparse version over the standard version
+#'   whenever possible. If your data consists of factor variables with a lot of levels,
+#'   model_frame_libFM is faster than sp_matrix_libFM.
+#'
+#' @examples
+#' data(movie_lens)
+#' movie_lens_sub = tail(movie_lens, 1000)
+#'
+#' # model.matrix will remove the reference level
+#' # which may not be desireable is some situations
+#' movie_lens_mm = Matrix::sparse.model.matrix(Rating ~ User + Movie - 1, data = movie_lens_sub)
+#'
+#' movie_lens_libFM = sp_matrix_libFM(movie_lens_mm, movie_lens_sub$Rating)
+#' head(movie_lens_libFM)
+#'
+#' @seealso \code{\link{model_frame_libFM}}, \code{\link{matrix_libFM}}
+#' @export
+sp_matrix_libFM <- function(mat, y) {
+  if (!inherits(mat, "sparseMatrix")) {
+    stop("mat must be a sparse matrix from the package Matrix")
+  }
+
+  tuples = Matrix::summary(mat)
+  tt = dplyr::summarize(
+    dplyr::group_by_(tuples, "i"),
+    tup = paste(
+      paste0(sprintf("%i", j - 1), ":", x),
+      collapse = " "
+    )
+  )
+
+  if (!missing(y)) {
+    out.string = paste(y, tt[["tup"]])
+  } else {
+    warning("No response variable. Using constant 1 as response")
+    out.string = paste(1, tt[["tup"]])
   }
   names(out.string) <- NULL
   return(out.string)
