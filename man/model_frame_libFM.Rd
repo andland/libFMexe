@@ -23,10 +23,10 @@ It is important to make sure your covariates are all factors (not indicators),
 or else it will not work correctly
 }
 \details{
-If your data is sparse, sp_matrix_libFM is about 100 times faster than
-  matrix_libFM. I recommend using the sparse version over the standard version
+If your data is sparse, \code{sp_matrix_libFM} is about 100 times faster than
+  \code{matrix_libFM}. I recommend using the sparse version over the standard version
   whenever possible. If your data consists of factor variables with a lot of levels,
-  model_frame_libFM is faster than sp_matrix_libFM.
+  \code{model_frame_libFM} is faster than \code{sp_matrix_libFM}.
 }
 \examples{
 data(movie_lens)

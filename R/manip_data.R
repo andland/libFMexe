@@ -11,10 +11,10 @@
 #'
 #' @return a character vector with one value per observation
 #'
-#' @details If your data is sparse, sp_matrix_libFM is about 100 times faster than
-#'   matrix_libFM. I recommend using the sparse version over the standard version
+#' @details If your data is sparse, \code{sp_matrix_libFM} is about 100 times faster than
+#'   \code{matrix_libFM}. I recommend using the sparse version over the standard version
 #'   whenever possible. If your data consists of factor variables with a lot of levels,
-#'   model_frame_libFM is faster than sp_matrix_libFM.
+#'   \code{model_frame_libFM} is faster than \code{sp_matrix_libFM}.
 #'
 #' @examples
 #' data(movie_lens)
@@ -75,10 +75,10 @@ model_frame_libFM <- function(formula, data, ...) {
 #'
 #' @return a character vector with one value per observation
 #'
-#' @details If your data is sparse, sp_matrix_libFM is about 100 times faster than
-#'   matrix_libFM. I recommend using the sparse version over the standard version
+#' @details If your data is sparse, \code{sp_matrix_libFM} is about 100 times faster than
+#'   \code{matrix_libFM}. I recommend using the sparse version over the standard version
 #'   whenever possible. If your data consists of factor variables with a lot of levels,
-#'   model_frame_libFM is faster than sp_matrix_libFM.
+#'   \code{model_frame_libFM} is faster than \code{sp_matrix_libFM}.
 #'
 #' @examples
 #' data(movie_lens)
@@ -96,6 +96,10 @@ model_frame_libFM <- function(formula, data, ...) {
 matrix_libFM <- function(mat, y) {
   if (!("matrix" %in% class(mat) || inherits(mat, "sparseMatrix"))) {
     stop("mat must be an object of class \"matrix\" or \"Matrix\"")
+  }
+  if (inherits(mat, "sparseMatrix")) {
+    warning("You are using a sparseMatrix. It is highly recommended that you use ",
+            "sp_matrix_libFM() instead.")
   }
   if ("matrix" %in% class(mat) & !is.numeric(mat)) {
     stop("mat must be a numeric matrix")
@@ -127,10 +131,10 @@ matrix_libFM <- function(mat, y) {
 #'
 #' @return a character vector with one value per observation
 #'
-#' @details If your data is sparse, sp_matrix_libFM is about 100 times faster than
-#'   matrix_libFM. I recommend using the sparse version over the standard version
+#' @details If your data is sparse, \code{sp_matrix_libFM} is about 100 times faster than
+#'   \code{matrix_libFM}. I recommend using the sparse version over the standard version
 #'   whenever possible. If your data consists of factor variables with a lot of levels,
-#'   model_frame_libFM is faster than sp_matrix_libFM.
+#'   \code{model_frame_libFM} is faster than \code{sp_matrix_libFM}.
 #'
 #' @examples
 #' data(movie_lens)
