@@ -105,7 +105,13 @@ matrix_libFM <- function(mat, y) {
     stop("mat must be a numeric matrix")
   }
   if (!missing(y)) {
-    out.string = paste0(y)
+    if (length(y) != nrow(mat) & length(y) != 1) {
+      stop("length of y does not match the number of rows in mat")
+    } else if (length(y) == 1) {
+      out.string = paste0(rep(y, nrow(mat)))
+    } else {
+      out.string = paste0(y)
+    }
   } else {
     warning("No response variable. Using constant 1 as response")
     out.string = paste0(rep(1, nrow(mat)))
@@ -153,7 +159,16 @@ sp_matrix_libFM <- function(mat, y) {
   if (!inherits(mat, "sparseMatrix")) {
     stop("mat must be a sparse matrix from the package Matrix")
   }
-
+  
+  if (!missing(y)) {
+    if (length(y) != nrow(mat) & length(y) != 1) {
+      stop("length of y does not match the number of rows in mat")
+    }
+  } else {
+    warning("No response variable. Using constant 1 as response")
+    y = 1
+  }
+  
   tuples = Matrix::summary(mat)
   tt = dplyr::summarize(
     dplyr::group_by_(tuples, "i"),
@@ -163,12 +178,7 @@ sp_matrix_libFM <- function(mat, y) {
     )
   )
 
-  if (!missing(y)) {
-    out.string = paste(y, tt[["tup"]])
-  } else {
-    warning("No response variable. Using constant 1 as response")
-    out.string = paste(1, tt[["tup"]])
-  }
+  out.string = paste(y, tt[["tup"]])
   names(out.string) <- NULL
   return(out.string)
 }
