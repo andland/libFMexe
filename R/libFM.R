@@ -189,7 +189,7 @@ libFM.default <- function(train, test, global_bias = TRUE, variable_bias = TRUE,
                    " -verbosity ", verbosity,
                    " -out ", outloc,
                    " -iter ", iter,
-                   " -dim \'", dim_txt, "\'")
+                   " -dim ", dim_txt)
   if (method %in% c("sgd", "als")) {
     command = paste0(command,
                      " -regular \'", regular_txt, "\'")
