@@ -1,7 +1,7 @@
 #' libFM factorization machines
 #'
-#' @param train training data.frame, matrix, or character vector
-#' @param test testing data.frame, matrix, or character vector
+#' @param train training data.frame, (sparse) matrix, or character vector
+#' @param test testing data.frame, (sparse) matrix, or character vector
 #' @param ... other, unused, arguments
 #'
 #' @details See the libFM manual, \url{http://www.libfm.org/libfm-1.42.manual.pdf},
@@ -32,6 +32,16 @@
 #'                task = "r", dim = 10, iter = 500)
 #'
 #' mean((predFM - test$Rating)^2)
+#'
+#' # the same can be done slightly more slowly with sparse matrices
+#'
+#' train_mat = Matrix::sparse.model.matrix(Rating ~ User + Movie - 1, train)
+#' test_mat = Matrix::sparse.model.matrix(Rating ~ User + Movie - 1, test)
+#'
+#' predFM = libFM(train_mat, test_mat, train$Rating, test$Rating,
+#'                task = "r", dim = 10, iter = 500)
+#'
+#' mean((predFM - test$Rating)^2)
 #' }
 #'
 #' @references
@@ -48,7 +58,7 @@ libFM <- function(train, test, ...) {
 #' @describeIn libFM
 #'
 #' @param formula formula of covariates included
-#' @param validation validation data.frame, matrix, or character vector used for
+#' @param validation validation data.frame, (sparse) matrix, or character vector used for
 #'   adaptive SGD
 #' @param grouping logical scalar or integer vector
 #'
@@ -101,6 +111,15 @@ libFM.matrix <- function(train, test, y_train, y_test,
   if (!inherits(test, "matrix")) {
     stop("train is a matrix but test is not")
   }
+  if (ncol(train) != ncol(test)) {
+    stop("train and test need to have the same number of columns")
+  }
+  if (nrow(train) != length(y_train)) {
+    stop("train and y_train need to have the same number of observations")
+  }
+  if (!missing(y_test) && nrow(test) != length(y_test)) {
+    stop("test and y_test need to have the same number of observations")
+  }
 
   if (!missing(grouping)) {
     # TODO: better check that integers and no missing groups
@@ -119,11 +138,62 @@ libFM.matrix <- function(train, test, y_train, y_test,
     if (!inherits(validation, "matrix")) {
       stop("train is a matrix but validation is not")
     }
+    if (ncol(train) != ncol(validation)) {
+      stop("train and validation need to have the same number of columns")
+    }
     validation = matrix_libFM(validation, y_validation)
   }
 
   libFM.default(train, test, validation = validation, grouping = grouping, ...)
 }
+
+#' @describeIn libFM
+#'
+#' @export
+libFM.dgCMatrix <- function(train, test, y_train, y_test,
+                            validation, y_validation, grouping, ...) {
+  if (missing(y_train)) {
+    stop("y_train is missing")
+  }
+  if (!inherits(test, "sparseMatrix")) {
+    stop("train is a sparse matrix but test is not")
+  }
+  if (ncol(train) != ncol(test)) {
+    stop("train and test need to have the same number of columns")
+  }
+  if (nrow(train) != length(y_train)) {
+    stop("train and y_train need to have the same number of observations")
+  }
+  if (!missing(y_test) && nrow(test) != length(y_test)) {
+    stop("test and y_test need to have the same number of observations")
+  }
+
+  if (!missing(grouping)) {
+    # TODO: better check that integers and no missing groups
+    if (!(is.numeric(grouping) & length(grouping) == ncol(train))) {
+      stop("when specifying a model with a matrix, grouping must ",
+           "be a numeric vector")
+    }
+  }
+
+  train = sp_matrix_libFM(train, y_train)
+  test = sp_matrix_libFM(test, y_test)
+  if (!missing(validation)) {
+    if (missing(y_validation)) {
+      stop("validation argument present but y_validation is missing")
+    }
+    if (!inherits(validation, "sparseMatrix")) {
+      stop("train is a sparse matrix but validation is not")
+    }
+    if (ncol(train) != ncol(validation)) {
+      stop("train and validation need to have the same number of columns")
+    }
+    validation = sp_matrix_libFM(validation, y_validation)
+  }
+
+  libFM.default(train, test, validation = validation, grouping = grouping, ...)
+}
+
 
 #' @describeIn libFM
 #'
@@ -152,7 +222,7 @@ libFM.default <- function(train, test, global_bias = TRUE, variable_bias = TRUE,
   if (missing(exe_loc)) {
     libfm_exe = "libFM"
   } else {
-    libfm_exe = paste0("\"", file.path(exe_loc, "libfm"), "\"")
+    libfm_exe = paste0("\"", file.path(exe_loc, "libFM"), "\"")
   }
 
   # the following will give an error if it cannot find libFM
@@ -165,7 +235,7 @@ libFM.default <- function(train, test, global_bias = TRUE, variable_bias = TRUE,
              "1 + # of groups")
       }
     } else if (!(length(regular) %in% c(1, 3))) {
-      stop("regular must be a scalar, vector of length 3")
+      stop("regular must be a scalar or a vector of length 3")
     }
     regular_txt = paste(regular, collapse = ",")
   } else {

@@ -4,6 +4,7 @@
 \alias{libFM}
 \alias{libFM.data.frame}
 \alias{libFM.default}
+\alias{libFM.dgCMatrix}
 \alias{libFM.matrix}
 \title{libFM factorization machines}
 \usage{
@@ -14,6 +15,9 @@ libFM(train, test, ...)
 \method{libFM}{matrix}(train, test, y_train, y_test, validation, y_validation,
   grouping, ...)
 
+\method{libFM}{dgCMatrix}(train, test, y_train, y_test, validation,
+  y_validation, grouping, ...)
+
 \method{libFM}{default}(train, test, global_bias = TRUE,
   variable_bias = TRUE, dim = 8, task = c("c", "r"), method = c("mcmc",
   "sgd", "als", "sgda"), init_stdev = 0.1, regular = c(0, 0, 0),
@@ -21,15 +25,15 @@ libFM(train, test, ...)
   grouping, ...)
 }
 \arguments{
-\item{train}{training data.frame, matrix, or character vector}
+\item{train}{training data.frame, (sparse) matrix, or character vector}
 
-\item{test}{testing data.frame, matrix, or character vector}
+\item{test}{testing data.frame, (sparse) matrix, or character vector}
 
 \item{...}{other, unused, arguments}
 
 \item{formula}{formula of covariates included}
 
-\item{validation}{validation data.frame, matrix, or character vector used for
+\item{validation}{validation data.frame, (sparse) matrix, or character vector used for
 adaptive SGD}
 
 \item{grouping}{logical scalar or integer vector}
@@ -92,6 +96,8 @@ See the libFM manual, \url{http://www.libfm.org/libfm-1.42.manual.pdf},
 
 \item \code{matrix}: 
 
+\item \code{dgCMatrix}: 
+
 \item \code{default}: 
 }}
 \examples{
@@ -102,6 +108,16 @@ train = movie_lens[train_rows, ]
 test  = movie_lens[-train_rows, ]
 
 predFM = libFM(train, test, Rating ~ User + Movie,
+               task = "r", dim = 10, iter = 500)
+
+mean((predFM - test$Rating)^2)
+
+# the same can be done slightly more slowly with sparse matrices
+
+train_mat = Matrix::sparse.model.matrix(Rating ~ User + Movie - 1, train)
+test_mat = Matrix::sparse.model.matrix(Rating ~ User + Movie - 1, test)
+
+predFM = libFM(train_mat, test_mat, train$Rating, test$Rating,
                task = "r", dim = 10, iter = 500)
 
 mean((predFM - test$Rating)^2)
