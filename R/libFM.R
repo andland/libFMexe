@@ -159,16 +159,17 @@ libFM.default <- function(train, test, global_bias = TRUE, variable_bias = TRUE,
   tmp = system(libfm_exe, intern = TRUE)
 
   if (method %in% c("sgd", "als")) {
-    # TODO: can be longer than 3 with grouping
-    if (!(length(regular) %in% c(1, 3))) {
-      stop("regular must be a scalar or vector of length 3")
-    }
-    if (length(regular) == 1) {
-      regular = rep(regular, 3)
+    if (method == "als" & !is.missing(grouping)) {
+      if (!(length(regular) %in% c(1, 3, 1 + 2 * length(unique(grouping))))) {
+        stop("With grouping, regular must be of either length 1, 3, or ",
+             "1 + # of groups")
+      }
+    } else if (!(length(regular) %in% c(1, 3))) {
+      stop("regular must be a scalar, vector of length 3")
     }
     regular_txt = paste(regular, collapse = ",")
   } else {
-    regular_txt = "0,0,0"
+    regular_txt = "0"
   }
 
   dim_txt = paste0(ifelse(global_bias, 1, 0), ",", ifelse(variable_bias, 1, 0), ",", dim)
@@ -211,7 +212,7 @@ libFM.default <- function(train, test, global_bias = TRUE, variable_bias = TRUE,
   }
   if (!missing(grouping)) {
     groupingloc = paste0(tempfile(), "libFMgroups.txt")
-    write.table(sprintf("%i", grouping), file = groupingloc, 
+    write.table(sprintf("%i", grouping), file = groupingloc,
                 col.names = FALSE, row.names = FALSE, quote = FALSE)
 
     command = paste0(command,
