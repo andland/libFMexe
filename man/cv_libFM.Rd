@@ -4,6 +4,7 @@
 \alias{cv_libFM}
 \alias{cv_libFM.data.frame}
 \alias{cv_libFM.default}
+\alias{cv_libFM.dgCMatrix}
 \alias{cv_libFM.matrix}
 \title{Cross validation for rank and initialization standard deviation
 with libFM factorization machines}
@@ -16,18 +17,21 @@ cv_libFM(x, ...)
 \method{cv_libFM}{matrix}(x, y, validation, y_validation, grouping,
   cv_verbosity = 0, ...)
 
+\method{cv_libFM}{dgCMatrix}(x, y, validation, y_validation, grouping,
+  cv_verbosity = 0, ...)
+
 \method{cv_libFM}{default}(x, dims = c(0, 8), init_stdevs = 0.1,
   folds = 5, validation, grouping, task = c("c", "r"), loss_function,
   cv_verbosity = 0, ...)
 }
 \arguments{
-\item{x}{data.frame, matrix, or character vector used for cross validation}
+\item{x}{data.frame, (sparse) matrix, or character vector used for cross validation}
 
 \item{...}{arguments passed to libFM}
 
 \item{formula}{formula of response and covariates included}
 
-\item{validation}{validation data.frame, matrix, or character vector used for
+\item{validation}{validation data.frame, (sparse) matrix, or character vector used for
 adaptive SGD}
 
 \item{grouping}{logical scalar or integer vector}
@@ -70,6 +74,8 @@ This function attempts to speed things up by converting all the data to libFM fo
 \item \code{data.frame}: 
 
 \item \code{matrix}: 
+
+\item \code{dgCMatrix}: 
 
 \item \code{default}: 
 }}

@@ -1,7 +1,7 @@
 #' Cross validation for rank and initialization standard deviation
 #' with libFM factorization machines
 #'
-#' @param x data.frame, matrix, or character vector used for cross validation
+#' @param x data.frame, (sparse) matrix, or character vector used for cross validation
 #' @param ... arguments passed to libFM
 #'
 #' @details
@@ -19,6 +19,12 @@
 #' mses = cv_libFM(movie_lens, Rating ~ User + Movie,
 #'                 task = "r", dims = c(0, 5, 10), cv_verbosity = 1)
 #' mses
+#'
+#' # with a sparse matrix
+#' movie_mat = Matrix::sparse.model.matrix(Rating ~ User + Movie - 1, movie_lens)
+#' mses = cv_libFM(movie_lens, Rating ~ User + Movie,
+#'                 task = "r", dims = c(0, 5, 10), cv_verbosity = 1)
+#' mses
 #' }
 #'
 ##' @return
@@ -33,7 +39,7 @@ cv_libFM <- function(x, ...) {
 #' @describeIn cv_libFM
 #'
 #' @param formula formula of response and covariates included
-#' @param validation validation data.frame, matrix, or character vector used for
+#' @param validation validation data.frame, (sparse) matrix, or character vector used for
 #'   adaptive SGD
 #' @param grouping logical scalar or integer vector
 #' @param cv_verbosity how much feedback to give on the progress of cross validation
@@ -85,6 +91,9 @@ cv_libFM.matrix <- function(x, y, validation, y_validation, grouping, cv_verbosi
   if (inherits(x, "matrix") & missing(y)) {
     stop("y is missing")
   }
+  if (nrow(x) != length(y)) {
+    stop("x and y must have the same number of observations")
+  }
 
   if (!missing(grouping)) {
     # TODO: better check that integers and no missing groups
@@ -107,7 +116,52 @@ cv_libFM.matrix <- function(x, y, validation, y_validation, grouping, cv_verbosi
     if (!inherits(validation, "matrix")) {
       stop("x is a matrix but validation is not")
     }
+    if (ncol(x) != ncol(validation)) {
+      stop("x and validation must have the same number of columns")
+    }
     validation = matrix_libFM(validation, y_validation)
+  }
+
+  cv_libFM.default(x, validation = validation, grouping = grouping,
+                   cv_verbosity = cv_verbosity, ...)
+}
+
+#' @describeIn cv_libFM
+#'
+#' @export
+cv_libFM.dgCMatrix <- function(x, y, validation, y_validation, grouping, cv_verbosity = 0, ...) {
+  if (missing(y)) {
+    stop("y_train is missing")
+  }
+  if (nrow(x) != length(y)) {
+    stop("x and y must have the same number of observations")
+  }
+
+  if (!missing(grouping)) {
+    # TODO: better check that integers and no missing groups
+    if (!(is.numeric(grouping) & length(grouping) == ncol(x))) {
+      stop("when specifying a model with a matrix, grouping must ",
+           "be a numeric vector")
+    }
+  }
+
+  if (cv_verbosity > 0) {
+    cat("Converting data to libFM format...\n")
+  }
+
+  x = sp_matrix_libFM(x, y)
+
+  if (!missing(validation)) {
+    if (missing(y_validation)) {
+      stop("validation argument present but y_validation is missing")
+    }
+    if (!inherits(validation, "sparseMatrix")) {
+      stop("x is a sparse matrix but validation is not")
+    }
+    if (ncol(x) != ncol(validation)) {
+      stop("x and validation must have the same number of columns")
+    }
+    validation = sp_matrix_libFM(validation, y_validation)
   }
 
   cv_libFM.default(x, validation = validation, grouping = grouping,

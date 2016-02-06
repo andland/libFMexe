@@ -112,13 +112,13 @@ libFM.matrix <- function(train, test, y_train, y_test,
     stop("train is a matrix but test is not")
   }
   if (ncol(train) != ncol(test)) {
-    stop("train and test need to have the same number of columns")
+    stop("train and test must have the same number of columns")
   }
   if (nrow(train) != length(y_train)) {
-    stop("train and y_train need to have the same number of observations")
+    stop("train and y_train must have the same number of observations")
   }
   if (!missing(y_test) && nrow(test) != length(y_test)) {
-    stop("test and y_test need to have the same number of observations")
+    stop("test and y_test must have the same number of observations")
   }
 
   if (!missing(grouping)) {
@@ -139,7 +139,7 @@ libFM.matrix <- function(train, test, y_train, y_test,
       stop("train is a matrix but validation is not")
     }
     if (ncol(train) != ncol(validation)) {
-      stop("train and validation need to have the same number of columns")
+      stop("train and validation must have the same number of columns")
     }
     validation = matrix_libFM(validation, y_validation)
   }
@@ -159,13 +159,13 @@ libFM.dgCMatrix <- function(train, test, y_train, y_test,
     stop("train is a sparse matrix but test is not")
   }
   if (ncol(train) != ncol(test)) {
-    stop("train and test need to have the same number of columns")
+    stop("train and test must have the same number of columns")
   }
   if (nrow(train) != length(y_train)) {
-    stop("train and y_train need to have the same number of observations")
+    stop("train and y_train must have the same number of observations")
   }
   if (!missing(y_test) && nrow(test) != length(y_test)) {
-    stop("test and y_test need to have the same number of observations")
+    stop("test and y_test must have the same number of observations")
   }
 
   if (!missing(grouping)) {
@@ -186,7 +186,7 @@ libFM.dgCMatrix <- function(train, test, y_train, y_test,
       stop("train is a sparse matrix but validation is not")
     }
     if (ncol(train) != ncol(validation)) {
-      stop("train and validation need to have the same number of columns")
+      stop("train and validation must have the same number of columns")
     }
     validation = sp_matrix_libFM(validation, y_validation)
   }
