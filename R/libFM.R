@@ -8,18 +8,17 @@
 #'  for details on the parameters.
 #'
 #'  For grouping, if specifying model with a formula, this should be a logical
-#'  of whether to group levels of a factor variable. If specifying the model with
+#'  of whether to group levels of a factor variable. If set to TRUE, each variable in
+#'  the formula gets its own group. If specifying the model with
 #'  a design matrix, this should be an integer vector of the same length as the
 #'  number of columns in the design matix, where each integer specifies the group
 #'  which the variable belongs to.
 #'
 #'  If the function is not working, make sure that the directory is in the PATH
 #'  by running \code{Sys.getenv('PATH')}. It is assumed that the executable is named
-#'  \code{libFM} on. You can verify that the executable is being found and works by
-#'  running \code{system("libFM -help")}.
-#'
-#'  See the README on \url{https://github.com/andland/libFMexe} for some more
-#'  information on installation.
+#'  \code{libFM}. You can verify that the executable is being found and works by
+#'  running \code{system("libFM -help")} in the R console. See the README on
+#'  \url{https://github.com/andland/libFMexe} for some more information on installation.
 #'
 #' @examples
 #' \dontrun{
@@ -60,7 +59,7 @@ libFM <- function(train, test, ...) {
 #' @param formula formula of covariates included
 #' @param validation validation data.frame, (sparse) matrix, or character vector used for
 #'   adaptive SGD
-#' @param grouping logical scalar or integer vector
+#' @param grouping logical scalar or integer vector. See details
 #'
 #' @export
 libFM.data.frame <- function(train, test, formula, validation, grouping, ...) {

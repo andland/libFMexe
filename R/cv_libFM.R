@@ -22,7 +22,7 @@
 #'
 #' # with a sparse matrix
 #' movie_mat = Matrix::sparse.model.matrix(Rating ~ User + Movie - 1, movie_lens)
-#' mses = cv_libFM(movie_lens, Rating ~ User + Movie,
+#' mses = cv_libFM(movie_mat, movie_lens$Rating,
 #'                 task = "r", dims = c(0, 5, 10), cv_verbosity = 1)
 #' mses
 #' }

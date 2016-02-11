@@ -36,7 +36,7 @@ libFM(train, test, ...)
 \item{validation}{validation data.frame, (sparse) matrix, or character vector used for
 adaptive SGD}
 
-\item{grouping}{logical scalar or integer vector}
+\item{grouping}{logical scalar or integer vector. See details}
 
 \item{y_train, y_test, y_validation}{numeric vectors of responses when train,
 test, and validation are matrices}
@@ -77,18 +77,17 @@ See the libFM manual, \url{http://www.libfm.org/libfm-1.42.manual.pdf},
  for details on the parameters.
 
  For grouping, if specifying model with a formula, this should be a logical
- of whether to group levels of a factor variable. If specifying the model with
+ of whether to group levels of a factor variable. If set to TRUE, each variable in
+ the formula gets its own group. If specifying the model with
  a design matrix, this should be an integer vector of the same length as the
  number of columns in the design matix, where each integer specifies the group
  which the variable belongs to.
 
  If the function is not working, make sure that the directory is in the PATH
  by running \code{Sys.getenv('PATH')}. It is assumed that the executable is named
- \code{libFM} on. You can verify that the executable is being found and works by
- running \code{system("libFM -help")}.
-
- See the README on \url{https://github.com/andland/libFMexe} for some more
- information on installation.
+ \code{libFM}. You can verify that the executable is being found and works by
+ running \code{system("libFM -help")} in the R console. See the README on
+ \url{https://github.com/andland/libFMexe} for some more information on installation.
 }
 \section{Methods (by class)}{
 \itemize{

@@ -54,11 +54,11 @@ devtools::install_github("andland/libFMexe")
 
 ## Using libFMexe
 
-The support for `libFM` is still fairly limited, but this package allows you to quickly iterate on a number of models. 
+libFM does well with categorical variables with lots of levels. The canonical example is for collaborative filtering, where there is one categorical variable for the users and one for the items. It also works well with sparse data.
 
-libFM does well with categorical variables with lots of levels. The canonical example is for collaborative filtering, where there is one categorical variable for the users and one for the items. For now, I have only included support for covariates that factor variables.
+The main advantage of this package is being able to try many different models. For example, trying different combinations of variables, trying different `dim` of the two-way interactions, or trying different `init_stdev`. In fact, you can use `cv_libFM()` to select `dim` with cross validation.
 
-The main advantage of this package is being able to try many different models. For example, trying different combinations of variables, trying different `dim` of the two-way interactions, or trying different `init_stdev`.
+As with the defaults of libFM, I suggest using `method = "mcmc"` because it automatically integrates over the regularization parameters, taking the hard work out of factorization. You can also use the `grouping` argument to group the regularization parameters by, for example, users and items.
 
 ### Collaborative Filtering Example
 
@@ -127,6 +127,16 @@ mean((predFM_RR - test$Rating)^2)
 elapsed = proc.time() - ptm
 ```
 This gives a mean squared error of `r mean((predFM_RR - test$Rating)^2)`, nearly the same as ridge regression. Also, it only took `r elapsed[["elapsed"]]` seconds to convert the data and run 100 iterations.
+
+In the above, I randomly chose `dim = 10`. We can use cross validation to select the dimension with lowest mean squared error. 
+
+```{r cv_libFM}
+mses = cv_libFM(train, Rating ~ User + Movie,
+                task = "r", dims = seq(0, 20, by = 5), iter = 500)
+mses
+```
+
+According to cross validation, we should use a dimension of `r rownames(mses)[which.min(mses)]`.
 
 ## License
 
