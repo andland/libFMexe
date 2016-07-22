@@ -228,7 +228,7 @@ libFM.default <- function(train, test, global_bias = TRUE, variable_bias = TRUE,
   tmp = system(libfm_exe, intern = TRUE)
 
   if (method %in% c("sgd", "als")) {
-    if (method == "als" & !is.missing(grouping)) {
+    if (method == "als" & !missing(grouping)) {
       if (!(length(regular) %in% c(1, 3, 1 + 2 * length(unique(grouping))))) {
         stop("With grouping, regular must be of either length 1, 3, or ",
              "1 + # of groups")
