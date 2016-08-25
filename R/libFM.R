@@ -210,12 +210,13 @@ libFM.dgCMatrix <- function(train, test, y_train, y_test,
 #' @param verbosity how much feedback to give
 #' @param iter number of iterations
 #' @param exe_loc location of libFM.exe executable (if not in the PATH)
+#' @param seed integer value of the seed for the random number generator
 #'
 #' @export
 libFM.default <- function(train, test, global_bias = TRUE, variable_bias = TRUE, dim = 8,
                 task = c("c", "r"), method = c("mcmc", "sgd", "als", "sgda"),
                 init_stdev = 0.1, regular = c(0, 0, 0), learn_rate = 0.1, validation,
-                verbosity = 0, iter = 100, exe_loc, grouping, ...) {
+                verbosity = 0, iter = 100, exe_loc, grouping, seed = NULL, ...) {
   method = match.arg(method)
   task = match.arg(task)
   if (missing(exe_loc)) {
@@ -227,6 +228,16 @@ libFM.default <- function(train, test, global_bias = TRUE, variable_bias = TRUE,
   # the following will give an error if it cannot find libFM
   tmp = system(libfm_exe, intern = TRUE)
 
+  if (!is.null(seed)) {
+    if (!any(grepl("-seed", tmp))) {
+      stop("Your version of libFM does not have the seed option. Install the latest version from https://github.com/srendle/libfm")
+    } else if (!is.numeric(seed) || seed < 0 || seed %% 1 != 0) {
+      stop("seed must be a non-negative integer")
+    } else {
+      seed = round(seed)
+    }
+  }
+  
   if (method %in% c("sgd", "als")) {
     if (method == "als" & !missing(grouping)) {
       if (!(length(regular) %in% c(1, 3, 1 + 2 * length(unique(grouping))))) {
@@ -286,6 +297,11 @@ libFM.default <- function(train, test, global_bias = TRUE, variable_bias = TRUE,
 
     command = paste0(command,
                      " -meta ", groupingloc)
+  }
+  
+  if (!is.null(seed)) {
+    command = paste0(command,
+                     " -seed ", seed)
   }
 
   out = system(command, intern = verbosity <= 0)
