@@ -210,7 +210,7 @@ libFM.dgCMatrix <- function(train, test, y_train, y_test,
 #' @param verbosity how much feedback to give
 #' @param iter number of iterations
 #' @param exe_loc location of libFM.exe executable (if not in the PATH)
-#' @param seed integer value of the seed for the random number generator
+#' @param seed integer value of the seed for the random number generator. Only implemented on version 1.4.2 or greater
 #'
 #' @export
 libFM.default <- function(train, test, global_bias = TRUE, variable_bias = TRUE, dim = 8,
@@ -237,7 +237,7 @@ libFM.default <- function(train, test, global_bias = TRUE, variable_bias = TRUE,
       seed = round(seed)
     }
   }
-  
+
   if (method %in% c("sgd", "als")) {
     if (method == "als" & !missing(grouping)) {
       if (!(length(regular) %in% c(1, 3, 1 + 2 * length(unique(grouping))))) {
@@ -298,7 +298,7 @@ libFM.default <- function(train, test, global_bias = TRUE, variable_bias = TRUE,
     command = paste0(command,
                      " -meta ", groupingloc)
   }
-  
+
   if (!is.null(seed)) {
     command = paste0(command,
                      " -seed ", seed)

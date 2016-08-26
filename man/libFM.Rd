@@ -22,7 +22,7 @@ libFM(train, test, ...)
   variable_bias = TRUE, dim = 8, task = c("c", "r"), method = c("mcmc",
   "sgd", "als", "sgda"), init_stdev = 0.1, regular = c(0, 0, 0),
   learn_rate = 0.1, validation, verbosity = 0, iter = 100, exe_loc,
-  grouping, ...)
+  grouping, seed = NULL, ...)
 }
 \arguments{
 \item{train}{training data.frame, (sparse) matrix, or character vector}
@@ -65,6 +65,8 @@ SGD and ALS}
 \item{iter}{number of iterations}
 
 \item{exe_loc}{location of libFM.exe executable (if not in the PATH)}
+
+\item{seed}{integer value of the seed for the random number generator. Only implemented on version 1.4.2 or greater}
 }
 \value{
 A vector of the predicted values/probabilities
